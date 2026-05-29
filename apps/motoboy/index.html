@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+  <title>Entregas - Padaria Lamim</title>
+  
+  <!-- Tailwind CSS & Plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind Config -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#fefae0",
+            "on-background": "#1d1c0d",
+            "surface": "#fefae0",
+            "surface-dim": "#dedbc2",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f8f4db",
+            "surface-container": "#f2efd5",
+            "surface-container-high": "#ede9cf",
+            "surface-container-highest": "#e7e3ca",
+            "on-surface": "#1d1c0d",
+            "on-surface-variant": "#4f4540",
+            "primary": "#6d574b",
+            "on-primary": "#ffffff",
+            "primary-container": "#877063",
+            "on-primary-container": "#fffbff",
+            "secondary": "#7d562d",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#ffca98",
+            "on-secondary-container": "#7a532a",
+            "tertiary": "#5a5e43",
+            "on-tertiary": "#ffffff",
+            "tertiary-container": "#73775a",
+            "on-tertiary-container": "#fcffe0",
+            "outline": "#81756f",
+            "outline-variant": "#d2c4bd",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "sans": ["Be Vietnam Pro", "sans-serif"],
+            "serif": ["EB Garamond", "serif"]
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .bg-flour-dust {
+      background-image: radial-gradient(#81756f 0.5px, transparent 0.5px);
+      background-size: 24px 24px;
+      opacity: 0.04;
+    }
+    .clay-card {
+      background: #f8f4db;
+      border: 1px solid rgba(139, 115, 102, 0.15);
+    }
+    .grain-texture {
+      background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+      opacity: 0.04;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    /* Mobile simulator centered on desktop */
+    body {
+      background-color: #1e293b;
+    }
+    .app-simulator {
+      width: 100%;
+      max-width: 440px;
+      height: 92vh;
+      max-height: 840px;
+      border-radius: 30px;
+      border: 4px solid #334155;
+      background-color: #fefae0;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    @media (max-width: 480px) {
+      body {
+        background-color: #fefae0;
+      }
+      .app-simulator {
+        height: 100vh;
+        max-height: 100%;
+        border-radius: 0;
+        border: none;
+      }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center items-center font-sans">
+  <div class="grain-texture"></div>
+
+  <!-- App simulator container -->
+  <div class="app-simulator">
+    <div class="fixed inset-0 pointer-events-none bg-flour-dust"></div>
+
+    <!-- Top App Bar -->
+    <header class="bg-surface-container-low flex justify-between items-center w-full px-margin-mobile h-16 sticky top-0 z-50 border-b border-outline-variant/10">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">motorcycle</span>
+        </div>
+        <div>
+          <h1 class="font-bold text-xs text-on-surface leading-none" id="txt-rider-name">Carlos Silva</h1>
+          <span class="text-[9px] uppercase tracking-wider text-outline font-bold">Entregador</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 select-none">
+        <span class="text-[9px] font-bold text-success uppercase tracking-wider" id="txt-status-label">Online</span>
+        <button class="w-8 h-8 bg-success/10 text-success rounded-full flex items-center justify-center" id="btn-status-toggle">
+          <span class="material-symbols-outlined text-sm">wifi</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="flex bg-surface-container border-b border-outline-variant/10 z-25">
+      <button class="flex-1 py-3 text-center text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary transition-all flex items-center justify-center gap-1.5" id="btn-tab-active">
+        <span class="material-symbols-outlined text-sm">navigation</span>
+        <span>Entregas</span>
+        <span class="bg-primary text-on-primary text-[9px] font-bold px-1.5 py-0.5 rounded-full" id="active-badge">0</span>
+      </button>
+      <button class="flex-1 py-3 text-center text-xs font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-all flex items-center justify-center gap-1.5" id="btn-tab-history">
+        <span class="material-symbols-outlined text-sm">history</span>
+        <span>Histórico</span>
+      </button>
+    </div>
+
+    <!-- Main Content Body -->
+    <main class="flex-grow overflow-y-auto p-margin-mobile pb-24 relative">
+      
+      <!-- VIEW 1: ACTIVE DELIVERIES -->
+      <section class="space-y-4 animate-fade-in" id="pane-active">
+        <!-- Delivery Card Container -->
+        <div id="active-delivery-container" class="space-y-4">
+          <!-- Rendered Dynamically -->
+        </div>
+      </section>
+
+      <!-- VIEW 2: HISTORY DELIVERIES -->
+      <section class="space-y-4 hidden animate-fade-in" id="pane-history">
+        <!-- Completed list -->
+        <div id="history-deliveries-list" class="space-y-4">
+          <!-- Rendered Dynamically -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Success screen overlay inside simulator -->
+    <div class="absolute inset-0 bg-background/95 backdrop-blur-xs z-50 flex items-center justify-center p-6 hidden opacity-0 transition-opacity duration-300" id="success-overlay">
+      <div class="bg-surface-container p-6 rounded-2xl border border-outline-variant/15 text-center flex flex-col items-center gap-4 max-w-xs shadow-xl transform scale-95 transition-transform duration-300">
+        <div class="w-14 h-14 rounded-full bg-success/15 border-2 border-success flex items-center justify-center text-success text-2xl font-bold">
+          <span class="material-symbols-outlined text-2xl">check</span>
+        </div>
+        <h2 class="font-serif text-xl font-bold text-on-surface">Entrega Concluída!</h2>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Parabéns! O status do pedido foi atualizado para entregue no painel da padaria.</p>
+        <button class="w-full bg-primary text-on-primary font-bold py-3 rounded-xl text-xs transition-all active:scale-95 shadow-sm" id="btn-success-close">
+          Voltar às Entregas
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Supabase Integration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

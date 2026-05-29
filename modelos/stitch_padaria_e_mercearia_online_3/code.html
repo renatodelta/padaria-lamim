@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;family=Be+Vietnam+Pro:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #fefae0; /* surface */
+        }
+        .font-headline { font-family: 'EB Garamond', serif; }
+        .cream-space { background-color: #fefae0; }
+        .tactile-card {
+            background-color: #f8f4db; /* surface-container-low */
+            border: 1px solid rgba(139, 115, 102, 0.15); /* 15% opacity primary brown */
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#2c1600",
+                        "surface-tint": "#705a4e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#1d1c0d",
+                        "surface-bright": "#fefae0",
+                        "surface-dim": "#dedbc2",
+                        "on-tertiary-fixed-variant": "#45492f",
+                        "tertiary-container": "#73775a",
+                        "on-surface-variant": "#4f4540",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#fffbff",
+                        "surface-container-high": "#ede9cf",
+                        "on-surface": "#1d1c0d",
+                        "surface-container": "#f2efd5",
+                        "background": "#fefae0",
+                        "outline-variant": "#d2c4bd",
+                        "on-secondary-fixed-variant": "#623f18",
+                        "on-error": "#ffffff",
+                        "tertiary": "#5a5e43",
+                        "on-primary-fixed": "#28180f",
+                        "primary-fixed": "#fbdccd",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#fcffe0",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#877063",
+                        "secondary-fixed-dim": "#f0bd8b",
+                        "primary-fixed-dim": "#dec1b2",
+                        "on-tertiary-fixed": "#1a1d07",
+                        "tertiary-fixed-dim": "#c5c9a7",
+                        "on-secondary-container": "#7a532a",
+                        "inverse-primary": "#dec1b2",
+                        "surface-variant": "#e7e3ca",
+                        "surface": "#fefae0",
+                        "secondary-fixed": "#ffdcbd",
+                        "inverse-on-surface": "#f5f1d8",
+                        "secondary-container": "#ffca98",
+                        "inverse-surface": "#323120",
+                        "on-primary-fixed-variant": "#574237",
+                        "tertiary-fixed": "#e1e6c2",
+                        "secondary": "#7d562d",
+                        "surface-container-low": "#f8f4db",
+                        "surface-container-highest": "#e7e3ca",
+                        "primary": "#6d574b",
+                        "outline": "#81756f",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1200px",
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Be Vietnam Pro"],
+                        "headline-lg": ["EB Garamond"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-lg-mobile": ["EB Garamond"],
+                        "display-lg": ["EB Garamond"],
+                        "headline-md": ["EB Garamond"],
+                        "body-lg": ["Be Vietnam Pro"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-surface-container-low dark:bg-surface-container-highest">
+<button class="flex items-center justify-center p-2 text-primary scale-95 active:opacity-80 transition-transform">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary italic">Lamim</h1>
+<button class="flex items-center justify-center p-2 text-primary scale-95 active:opacity-80 transition-transform">
+<span class="material-symbols-outlined">search</span>
+</button>
+</header>
+<main class="pt-24 pb-32 px-4 max-w-container-max mx-auto overflow-hidden">
+<!-- Celebration Section -->
+<section class="flex flex-col items-center text-center mb-10 animate-fade-in">
+<div class="relative w-48 h-48 mb-6 flex items-center justify-center">
+<!-- Success Illustration -->
+<div class="absolute inset-0 bg-secondary-container/20 rounded-full scale-110"></div>
+<div class="relative z-10 w-full h-full rounded-full border-2 border-primary/10 overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover grayscale-[20%] sepia-[10%]" data-alt="A warm, artisanal flat-lay photograph of a fresh sourdough loaf tied with a rustic twine ribbon. The bread rests on a floured wooden surface in a cozy bakery environment. Soft, golden morning light filters through a nearby window, creating a nostalgic and celebratory atmosphere with a palette of warm beiges, creams, and earthy browns." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOnvXrK54BXcX4y1sUZBnX5ybmmIpRSFKZwfvxm0HBDLsD8M3d1HsS-tZQ2bB0q_cfEUIARzub4JiTHtvD1MklZzyyodZoT6d3M8mDkvU9rwwvPk9HwlbgSAfvIrwRoW1_S73qIjszgJ1RLQnAA7zwu0FKbo3uw7k8emyOmmFgZB3zTUtpMU7ENwmMl7mZE6AXc70XvZ9YmHLoyfbuOIyYSmPlKFo3fhlAhbWg5qyjux6ZYPhgGEn8d0m1yiMDNJpphzriWy7_eTRL"/>
+</div>
+<div class="absolute -bottom-2 right-4 bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform rotate-12">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Pedido Confirmado!</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[280px]">O cheirinho de pão fresco logo chegará até você.</p>
+</section>
+<!-- Order Info Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+<!-- Details Card -->
+<div class="tactile-card p-6 rounded-xl flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Número do Pedido</p>
+<p class="font-body-lg text-body-lg font-bold text-primary">#12345</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Previsão de Entrega</p>
+<p class="font-body-lg text-body-lg font-bold text-primary">30-45 min</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Entregar em</p>
+<p class="font-body-md text-body-md text-on-surface">Rua das Amendoeiras, 42 - Jardim Primavera</p>
+</div>
+</div>
+</div>
+<!-- Summary Card -->
+<div class="tactile-card p-6 rounded-xl">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Resumo da Cesta</p>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-variant overflow-hidden border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Close up of a crusty artisanal sourdough bread loaf with beautiful scoring patterns on a rustic wooden table. Warm bakery lighting accentuating the golden crust texture. Colors include deep golds, browns and creamy flour dustings." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARO2zy58MYs2JDEJDsiCQQFRECDxhQU6tvGvaF-J19P55VfzxzT29xMACoANw4A16P0NjGA5bHcDxHvV14qTyxpm5oI_jzRkCnkwjws0E1Vkq_iqbLW33TgzB1gwXEQstdEf-FOGSHbKAzSyebJyjmW4ZJUw-6Dgn0x9pdNZMbnsIpyRlY8kFylVPyEocgoXGcG5-xpocSDUCmiVAh8jYm_B300anSx3F5LJRXAwaBIwxUQ0LvjNaD5wYI9qnYsaT_SojA581Hy2oM"/>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-medium text-on-surface">Pão Campestre Sourdough</p>
+<p class="font-label-md text-label-md text-on-surface-variant">1 unidade</p>
+</div>
+<p class="font-label-md text-label-md text-primary">R$ 28,00</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-variant overflow-hidden border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="A set of two golden-brown croissants on a white ceramic plate, placed on a light wooden table. The croissants are flaky and look freshly baked. Soft natural light highlights their buttery layers. Neutral cream and warm wood tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAplAMstJgGkHLNWYYfH4ZjuRVK5GtTMVKq-7gXg0qyTqTWIQcAsJYLaE6Tgp863Z3to3DV5mGs1CsrJv8PCepYNb2Q726QH5pyYh-6zycbSQ5zq5mkOsUHNQrUBhSEcGv9KlooYxYJJqABWm8KotR9UrnXwmUSabfLHOddYUyXtqbmMsZQUU05d2wqIl4H6I65M_0jPfrZCXc909dTMCzFcAgWjPa1h2fShEo5-LwVxBpEkAX7_5BtzVclPro0Ke_tRTc5UQvge7v2"/>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-medium text-on-surface">Croissant Clássico</p>
+<p class="font-label-md text-label-md text-on-surface-variant">2 unidades</p>
+</div>
+<p class="font-label-md text-label-md text-primary">R$ 24,00</p>
+</div>
+<div class="pt-2 mt-2 border-t border-primary/10 flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant italic">+ 1 item na cesta</span>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface-variant">Total</p>
+<p class="font-body-lg text-body-lg font-bold text-primary">R$ 62,50</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3 max-w-sm mx-auto">
+<button class="bg-primary text-on-primary font-label-md text-label-md py-4 rounded-xl shadow-sm hover:bg-primary-container transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">map</span>
+                Acompanhar Pedido
+            </button>
+<button class="bg-transparent border border-primary/20 text-primary font-label-md text-label-md py-4 rounded-xl hover:bg-primary/5 transition-all active:scale-95">
+                Voltar para a Loja
+            </button>
+</div>
+</main>
+<!-- BottomNavBar (Hidden on Checkout/Success as per suppression rules, but provided as anchor reference) -->
+<!-- The mandate says to suppress if page intent is Transactional/Success. I will exclude it here to prioritize the canvas as per "Automatic Suppression". -->
+<!-- Tiny decorative element at the bottom -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-primary scale-[4]" style="font-variation-settings: 'wght' 200;">bakery_dining</span>
+</div>
+<script>
+        // Simple fade-in effect for the content
+        document.addEventListener('DOMContentLoaded', () => {
+            const main = document.querySelector('main');
+            main.style.opacity = '0';
+            main.style.transform = 'translateY(10px)';
+            main.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            
+            setTimeout(() => {
+                main.style.opacity = '1';
+                main.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body></html>
