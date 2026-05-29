@@ -638,6 +638,52 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .subscribe();
 
+  // --- PWA INSTALLATION LOGIC ---
+  let deferredPrompt;
+  const installBanner = document.getElementById('install-banner');
+  const btnInstallApp = document.getElementById('btn-install-app');
+  const btnInstallClose = document.getElementById('btn-install-close');
+
+  if (installBanner && btnInstallApp && btnInstallClose) {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!sessionStorage.getItem('pwa_banner_dismissed')) {
+        installBanner.classList.remove('hidden');
+      }
+    });
+
+    btnInstallApp.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`Instalação PWA: ${outcome}`);
+        deferredPrompt = null;
+        installBanner.classList.add('hidden');
+      }
+    });
+
+    btnInstallClose.addEventListener('click', () => {
+      installBanner.classList.add('hidden');
+      sessionStorage.setItem('pwa_banner_dismissed', 'true');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA instalado com sucesso!');
+      installBanner.classList.add('hidden');
+      deferredPrompt = null;
+    });
+  }
+
+  // Registro do Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => console.log('Service Worker do Cliente registrado com sucesso no escopo:', reg.scope))
+        .catch((err) => console.error('Erro ao registrar Service Worker do Cliente:', err));
+    });
+  }
+
   // --- INITIAL SETUP ---
   checkStoreStatus();
   renderCategoryNav();

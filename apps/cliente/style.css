@@ -1281,4 +1281,132 @@ h1, h2, h3, .font-serif {
     transform: none;
     box-shadow: 0 4px 15px rgba(109, 87, 75, 0.03);
     border-color: var(--border-light);
+
+
+/* PWA Install Banner Style */
+.install-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--primary);
+    color: #fefae0;
+    z-index: 1100;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: slideDown 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    border-bottom: 2px solid var(--accent);
 }
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.install-banner.hidden {
+    display: none !important;
+}
+
+.install-banner-content {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.install-app-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    border: 1px solid rgba(254, 250, 224, 0.2);
+}
+
+.install-banner-text {
+    flex: 1;
+    min-width: 200px;
+    text-align: left;
+}
+
+.install-banner-text h4 {
+    margin: 0 0 2px 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.install-banner-text p {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    line-height: 1.3;
+}
+
+.install-banner-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-install-confirm {
+    background: #5a5e43; /* Tertiary color */
+    color: #fefae0;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-install-confirm:hover {
+    background: #73775a;
+    transform: translateY(-1px);
+}
+
+.btn-install-confirm:active {
+    transform: translateY(0);
+}
+
+.btn-install-close {
+    background: transparent;
+    color: #fefae0;
+    border: 1px solid rgba(254, 250, 224, 0.4);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-install-close:hover {
+    background: rgba(254, 250, 224, 0.1);
+}
+
+@media (max-width: 576px) {
+    .install-banner-content {
+        padding: 10px 16px;
+    }
+    .install-app-icon {
+        width: 36px;
+        height: 36px;
+    }
+    .install-banner-text {
+        min-width: 100%;
+        margin-top: 4px;
+        order: 2;
+    }
+    .install-banner-actions {
+        width: 100%;
+        justify-content: flex-end;
+        order: 3;
+    }
+}
+
