@@ -1281,7 +1281,7 @@ h1, h2, h3, .font-serif {
     transform: none;
     box-shadow: 0 4px 15px rgba(109, 87, 75, 0.03);
     border-color: var(--border-light);
-
+}
 
 /* PWA Install Banner Style */
 .install-banner {
