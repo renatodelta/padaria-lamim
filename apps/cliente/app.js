@@ -457,6 +457,29 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleAddress();
   };
 
+  // --- PHONE MASK LOGIC ---
+  const inputPhone = document.getElementById('input-phone');
+  if (inputPhone) {
+    inputPhone.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+      if (value.length > 11) value = value.slice(0, 11); // Limita a 11 dígitos
+
+      if (value.length > 10) {
+        // Celular: (XX) XXXXX-XXXX
+        value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+      } else if (value.length > 6) {
+        // Fixo: (XX) XXXX-XXXX
+        value = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`;
+      } else if (value.length > 2) {
+        value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+      } else if (value.length > 0) {
+        value = `(${value}`;
+      }
+      
+      e.target.value = value;
+    });
+  }
+
   // --- SEARCH AND FILTER ---
   productSearchInput.onkeyup = () => {
     searchQuery = productSearchInput.value;
