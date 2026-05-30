@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedOrder = null;
   let searchQuery = '';
   let activeView = 'orders'; // 'orders', 'products', 'stock', 'motoboys'
+  let soundEnabled = localStorage.getItem('dashboard_sound_alerts') !== 'disabled';
 
   // --- UI ELEMENTS ---
   const listPending = document.getElementById('list-pending');
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const inputSearchOrders = document.getElementById('input-search-orders');
   const btnRefreshDashboard = document.getElementById('btn-refresh-dashboard');
+  const btnToggleSound = document.getElementById('btn-toggle-sound');
 
   // Detail Drawer Elements
   const detailDrawer = document.getElementById('detail-drawer');
@@ -1063,12 +1065,96 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCloseDrawer.onclick = closeDrawer;
   drawerOverlay.onclick = closeDrawer;
 
+  // --- SOUND ALERTS (WEB AUDIO API) ---
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playTone(ctx, freq, startTime, duration, volume) {
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(freq, startTime);
+    
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(freq * 2, startTime);
+    
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.05);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    osc1.start(startTime);
+    osc2.start(startTime);
+    osc1.stop(startTime + duration + 0.1);
+    osc2.stop(startTime + duration + 0.1);
+  }
+
+  function playNewOrderSound() {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+      
+      // Beautiful harmonic chime: C5 (523.25 Hz) then E5 (659.25 Hz)
+      playTone(ctx, 523.25, now, 0.8, 0.2);
+      playTone(ctx, 659.25, now + 0.25, 1.0, 0.2);
+    } catch (e) {
+      console.warn("Failed to play audio alert:", e);
+    }
+  }
+
+  function updateSoundButtonUI() {
+    if (!btnToggleSound) return;
+    const icon = btnToggleSound.querySelector('span');
+    if (!icon) return;
+    
+    if (soundEnabled) {
+      icon.textContent = 'notifications_active';
+      btnToggleSound.title = 'Alerta Sonoro (Ativado)';
+      btnToggleSound.classList.remove('text-outline');
+      btnToggleSound.classList.add('text-secondary');
+    } else {
+      icon.textContent = 'notifications_off';
+      btnToggleSound.title = 'Alerta Sonoro (Desativado)';
+      btnToggleSound.classList.remove('text-secondary');
+      btnToggleSound.classList.add('text-outline');
+    }
+  }
+
+  if (btnToggleSound) {
+    updateSoundButtonUI();
+    btnToggleSound.onclick = () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('dashboard_sound_alerts', soundEnabled ? 'enabled' : 'disabled');
+      updateSoundButtonUI();
+      if (soundEnabled) {
+        playNewOrderSound();
+      }
+    };
+  }
+
   // --- REAL-TIME SYNC VIA SUPABASE ---
   // Inscrições Realtime para pedidos, produtos e motoboys
   const ordersSubscription = supabaseClient
     .channel('public:pedidos')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, (payload) => {
       console.log('Pedidos atualizados no Supabase:', payload);
+      if (payload.eventType === 'INSERT') {
+        playNewOrderSound();
+      }
       loadDashboardData();
     })
     .subscribe();
