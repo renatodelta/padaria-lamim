@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
           motoboy: item.motoboy,
           dispatchedTime: item.dispatched_time,
           deliveredTime: item.delivered_time,
-          timestamp: item.created_at
+          timestamp: item.timestamp
         }));
       } else {
         orders = [];

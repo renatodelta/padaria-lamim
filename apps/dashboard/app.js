@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
           motoboy: item.motoboy,
           dispatchedTime: item.dispatched_time,
           deliveredTime: item.delivered_time,
-          timestamp: item.created_at
+          timestamp: item.timestamp
         }));
       }
     } catch (e) {
@@ -1253,24 +1253,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Bless HTML5 Audio element on first user gesture to bypass autoplay block
+  // Bless HTML5 Audio element on first user gesture to bypass autoplay block (using capture phase to bypass stopPropagation)
   const blessAudio = () => {
     if (notificationAudio) {
       notificationAudio.play().then(() => {
         notificationAudio.pause();
         notificationAudio.currentTime = 0;
         console.log("Notification audio element blessed and unlocked!");
+        // Remove listeners once successfully blessed
+        document.removeEventListener('click', blessAudio, { capture: true });
+        document.removeEventListener('keydown', blessAudio, { capture: true });
+        document.removeEventListener('touchstart', blessAudio, { capture: true });
       }).catch(e => {
         console.warn("Could not bless audio yet:", e);
       });
-      
-      document.removeEventListener('click', blessAudio);
-      document.removeEventListener('keydown', blessAudio);
-      document.removeEventListener('touchstart', blessAudio);
     }
   };
-  document.addEventListener('click', blessAudio);
-  document.addEventListener('keydown', blessAudio);
-  document.addEventListener('touchstart', blessAudio);
+  document.addEventListener('click', blessAudio, { capture: true });
+  document.addEventListener('keydown', blessAudio, { capture: true });
+  document.addEventListener('touchstart', blessAudio, { capture: true });
 
   function playNewOrderSound() {
     if (!soundEnabled || !notificationAudio) return;

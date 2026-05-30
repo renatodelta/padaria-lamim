@@ -623,7 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
           total: parseFloat(data[0].total),
           notes: data[0].notes,
           status: data[0].status,
-          timestamp: data[0].created_at
+          timestamp: data[0].timestamp
         };
       } else {
         throw new Error("Não foi possível recuperar os dados inseridos.");
