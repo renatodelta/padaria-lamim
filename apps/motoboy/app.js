@@ -10,9 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let motoboysList = [];
 
   // --- UI ELEMENTS ---
-  const selectRiderProfile = document.getElementById('select-rider-profile');
+  const txtRiderName = document.getElementById('txt-rider-name');
   const btnStatusToggle = document.getElementById('btn-status-toggle');
   const txtStatusLabel = document.getElementById('txt-status-label');
+  const btnLogout = document.getElementById('btn-logout');
 
   const btnTabActive = document.getElementById('btn-tab-active');
   const btnTabHistory = document.getElementById('btn-tab-history');
@@ -27,6 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const successOverlay = document.getElementById('success-overlay');
   const btnSuccessClose = document.getElementById('btn-success-close');
 
+  // Login Screen elements
+  const loginOverlay = document.getElementById('login-overlay');
+  const formLogin = document.getElementById('form-login');
+  const selectLoginRider = document.getElementById('select-login-rider');
+  const inputLoginPassword = document.getElementById('input-login-password');
+
   // --- LOAD MOTOBOYS & POPULATE SELECT ---
   async function loadMotoboys() {
     try {
@@ -40,78 +47,140 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data && data.length > 0) {
         motoboysList = data;
         
-        selectRiderProfile.innerHTML = '';
+        // Populate select-login-rider
+        selectLoginRider.innerHTML = '<option value="">Selecione seu nome...</option>';
         motoboysList.forEach(m => {
           const opt = document.createElement('option');
           opt.value = m.name;
           opt.textContent = m.name;
-          selectRiderProfile.appendChild(opt);
+          selectLoginRider.appendChild(opt);
         });
 
-        // Restore last selected rider or use first
+        // Check active session
         const savedRider = localStorage.getItem('motoboy_app_current_rider');
         if (savedRider && motoboysList.some(m => m.name === savedRider)) {
+          // Logged in!
           currentRider = savedRider;
+          txtRiderName.textContent = currentRider;
+          loginOverlay.classList.add('hidden');
+
+          // Sync status
+          const activeRiderData = motoboysList.find(m => m.name === currentRider);
+          if (activeRiderData) {
+            isOnline = activeRiderData.status === 'online';
+            updateStatusUI();
+          }
+
+          loadDeliveries();
         } else {
-          currentRider = motoboysList[0].name;
-        }
-        selectRiderProfile.value = currentRider;
-        
-        // Sync active rider's status
-        const activeRiderData = motoboysList.find(m => m.name === currentRider);
-        if (activeRiderData) {
-          isOnline = activeRiderData.status === 'online';
-          updateStatusUI();
+          // Not logged in, show login form
+          localStorage.removeItem('motoboy_app_current_rider');
+          currentRider = '';
+          txtRiderName.textContent = 'Não Logado';
+          loginOverlay.classList.remove('hidden');
         }
       } else {
-        selectRiderProfile.innerHTML = '<option value="">Sem entregadores</option>';
+        selectLoginRider.innerHTML = '<option value="">Sem entregadores cadastrados</option>';
         currentRider = '';
+        txtRiderName.textContent = 'Não Logado';
+        loginOverlay.classList.remove('hidden');
       }
     } catch (err) {
       console.error("Erro ao carregar entregadores:", err);
-      // Fallback
+      // Fallback local
       motoboysList = [
-        { name: 'Carlos Silva', status: 'online' },
-        { name: 'João Santos', status: 'online' },
-        { name: 'Roberto Silveira', status: 'offline' }
+        { name: 'Carlos Silva', status: 'online', password: '123' },
+        { name: 'João Santos', status: 'online', password: '123' },
+        { name: 'Roberto Silveira', status: 'offline', password: '123' }
       ];
-      selectRiderProfile.innerHTML = '';
+      selectLoginRider.innerHTML = '<option value="">Selecione seu nome...</option>';
       motoboysList.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m.name;
         opt.textContent = m.name;
-        selectRiderProfile.appendChild(opt);
+        selectLoginRider.appendChild(opt);
       });
-      currentRider = 'Carlos Silva';
-      selectRiderProfile.value = currentRider;
+      loginOverlay.classList.remove('hidden');
     }
-
-    loadDeliveries();
   }
 
-  // Change rider profile
-  if (selectRiderProfile) {
-    selectRiderProfile.onchange = async () => {
-      currentRider = selectRiderProfile.value;
-      if (!currentRider) return;
+  // Handle Login form submit
+  if (formLogin) {
+    formLogin.onsubmit = async (e) => {
+      e.preventDefault();
+      const selectedName = selectLoginRider.value;
+      const enteredPassword = inputLoginPassword.value.trim();
 
-      localStorage.setItem('motoboy_app_current_rider', currentRider);
-
-      // Turn online by default when selecting profile
-      isOnline = true;
-      updateStatusUI();
-      
-      try {
-        await supabaseClient
-          .from('motoboys')
-          .update({ status: 'online' })
-          .eq('name', currentRider);
-      } catch (e) {
-        console.error("Erro ao atualizar status do entregador no Supabase", e);
+      if (!selectedName) {
+        alert('Selecione seu nome da lista!');
+        return;
+      }
+      if (!enteredPassword) {
+        alert('Digite sua senha de acesso!');
+        return;
       }
 
-      loadDeliveries();
-      alert(`Bem-vindo, ${currentRider}! Seu perfil foi ativado.`);
+      // Procura entregador
+      const rider = motoboysList.find(m => m.name === selectedName);
+      if (!rider) {
+        alert('Entregador não encontrado!');
+        return;
+      }
+
+      // Validação de senha simples
+      if (rider.password === enteredPassword) {
+        currentRider = selectedName;
+        txtRiderName.textContent = currentRider;
+        localStorage.setItem('motoboy_app_current_rider', currentRider);
+        
+        // Log in status = online
+        isOnline = true;
+        updateStatusUI();
+        
+        try {
+          await supabaseClient
+            .from('motoboys')
+            .update({ status: 'online' })
+            .eq('name', currentRider);
+        } catch (err) {
+          console.error("Erro ao definir status online:", err);
+        }
+
+        // Hide overlay and load deliveries
+        loginOverlay.classList.add('hidden');
+        inputLoginPassword.value = '';
+        loadDeliveries();
+      } else {
+        alert('Senha incorreta! Tente novamente ou peça ajuda ao administrador.');
+      }
+    };
+  }
+
+  // Handle Logout button click
+  if (btnLogout) {
+    btnLogout.onclick = async () => {
+      if (confirm('Tem certeza que deseja sair do seu perfil?')) {
+        // Set offline in database first if rider is logged in
+        if (currentRider) {
+          try {
+            await supabaseClient
+              .from('motoboys')
+              .update({ status: 'offline' })
+              .eq('name', currentRider);
+          } catch (err) {
+            console.error("Erro ao definir status offline no logout:", err);
+          }
+        }
+
+        localStorage.removeItem('motoboy_app_current_rider');
+        currentRider = '';
+        txtRiderName.textContent = 'Não Logado';
+        
+        // Show login screen
+        loginOverlay.classList.remove('hidden');
+        inputLoginPassword.value = '';
+        selectLoginRider.value = '';
+      }
     };
   }
 

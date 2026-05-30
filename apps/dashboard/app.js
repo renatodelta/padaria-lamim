@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const formMotoboy = document.getElementById('form-motoboy');
   const inputMotoboyName = document.getElementById('input-motoboy-name');
+  const inputMotoboyPassword = document.getElementById('input-motoboy-password');
   const motoboysTableBody = document.getElementById('motoboys-table-body');
 
   const productsListContainer = document.getElementById('products-list-container');
@@ -713,19 +714,22 @@ document.addEventListener('DOMContentLoaded', () => {
     formMotoboy.onsubmit = async (e) => {
       e.preventDefault();
       const name = inputMotoboyName.value.trim();
-      if (!name) return;
+      const password = inputMotoboyPassword.value.trim();
+      if (!name || !password) return;
 
       try {
         const { error } = await supabaseClient
           .from('motoboys')
           .insert({
             name: name,
+            password: password,
             status: 'offline'
           });
 
         if (error) throw error;
 
         inputMotoboyName.value = '';
+        inputMotoboyPassword.value = '';
         alert('Entregador cadastrado com sucesso!');
         await loadMotoboysData();
       } catch (err) {
