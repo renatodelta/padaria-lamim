@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html class="light" lang="pt-BR">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Painel de Atendimento - Padaria Lamim</title>
-  
+
   <!-- Tailwind CSS & Plugins -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  
+
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
   <!-- Tailwind Config -->
   <script id="tailwind-config">
     tailwind.config = {
@@ -49,7 +53,8 @@
             "outline-variant": "#d2c4bd",
             "error": "#ba1a1a",
             "error-container": "#ffdad6",
-            "on-error-container": "#93000a"
+            "on-error-container": "#93000a",
+            "success": "#10b981"
           },
           "borderRadius": {
             "DEFAULT": "0.25rem",
@@ -67,32 +72,39 @@
       }
     }
   </script>
-  
+
   <style>
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
       vertical-align: middle;
     }
+
     .order-card-hover {
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .order-card-hover:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(125, 86, 45, 0.06);
     }
+
     .kanban-scroll::-webkit-scrollbar {
       width: 5px;
     }
+
     .kanban-scroll::-webkit-scrollbar-track {
       background: transparent;
     }
+
     .kanban-scroll::-webkit-scrollbar-thumb {
       background: #d2c4bd;
       border-radius: 10px;
     }
+
     .animate-fade-in {
       animation: fadeIn 0.3s ease-out forwards;
     }
+
     .grain-texture {
       background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
       opacity: 0.04;
@@ -102,37 +114,43 @@
       z-index: 9999;
     }
   </style>
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
+
 <body class="bg-background text-on-background font-sans min-h-screen overflow-hidden">
   <div class="grain-texture"></div>
 
   <!-- Side Navigation Bar -->
-  <aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/15 flex flex-col py-6 z-30 select-none">
+  <aside
+    class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/15 flex flex-col py-6 z-30 select-none">
     <div class="px-6 mb-8">
       <h1 class="font-serif text-2xl font-bold text-secondary italic leading-none">Padaria Lamim</h1>
       <p class="text-[10px] tracking-[0.2em] uppercase opacity-70 font-semibold mt-1">Gestão de Pedidos</p>
     </div>
-    
+
     <nav class="flex-grow space-y-1">
-      <button id="nav-orders" class="w-full text-left flex items-center px-6 py-3 text-secondary font-bold border-r-4 border-secondary bg-secondary-container/15 transition-transform active:scale-[0.98] cursor-pointer select-none">
+      <button id="nav-orders"
+        class="w-full text-left flex items-center px-6 py-3 text-secondary font-bold border-r-4 border-secondary bg-secondary-container/15 transition-transform active:scale-[0.98] cursor-pointer select-none">
         <span class="material-symbols-outlined mr-3">dashboard</span>
         <span class="text-sm font-semibold">Painel de Pedidos</span>
       </button>
-      <button id="nav-products" class="w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none">
+      <button id="nav-products"
+        class="w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none">
         <span class="material-symbols-outlined mr-3">shopping_bag</span>
         <span class="text-sm">Produtos</span>
       </button>
-      <button id="nav-stock" class="w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none">
+      <button id="nav-stock"
+        class="w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none">
         <span class="material-symbols-outlined mr-3">inventory_2</span>
         <span class="text-sm">Estoque</span>
       </button>
-      <button id="nav-motoboys" class="w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none">
+      <button id="nav-motoboys"
+        class="w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none">
         <span class="material-symbols-outlined mr-3">delivery_dining</span>
         <span class="text-sm">Entregadores</span>
       </button>
     </nav>
-    
+
     <div class="px-6 mt-auto space-y-2 border-t border-outline-variant/10 pt-4">
       <div class="flex items-center gap-3 text-xs text-on-surface-variant opacity-75">
         <span class="w-2.5 h-2.5 rounded-full bg-success animate-pulse" id="network-status-indicator"></span>
@@ -143,39 +161,48 @@
   </aside>
 
   <!-- Top App Bar -->
-  <header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-surface border-b border-outline-variant/15 shadow-sm flex justify-between items-center px-8 z-20">
+  <header
+    class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-surface border-b border-outline-variant/15 shadow-sm flex justify-between items-center px-8 z-20">
     <div class="flex items-center gap-8">
       <h2 class="font-serif text-xl font-bold text-secondary">Atendimento</h2>
       <nav class="hidden lg:flex gap-6">
-        <button class="text-secondary border-b-2 border-secondary pb-1 font-bold text-xs uppercase tracking-wider" id="btn-tab-today">Hoje</button>
+        <button class="text-secondary border-b-2 border-secondary pb-1 font-bold text-xs uppercase tracking-wider"
+          id="btn-tab-today">Hoje</button>
       </nav>
     </div>
-    
+
     <div class="flex items-center gap-4">
       <div class="relative">
         <span class="absolute inset-y-0 left-3 flex items-center text-outline">
           <span class="material-symbols-outlined text-sm">search</span>
         </span>
-        <input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-secondary/30 w-64 placeholder:text-outline/60 text-on-surface outline-none" id="input-search-orders" placeholder="Buscar pedidos..." type="text"/>
+        <input
+          class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-secondary/30 w-64 placeholder:text-outline/60 text-on-surface outline-none"
+          id="input-search-orders" placeholder="Buscar pedidos..." type="text" />
       </div>
-      <button class="p-2 hover:bg-surface-container-highest/30 rounded-full transition-all text-on-surface-variant relative" id="btn-refresh-dashboard">
+      <button
+        class="p-2 hover:bg-surface-container-highest/30 rounded-full transition-all text-on-surface-variant relative"
+        id="btn-refresh-dashboard">
         <span class="material-symbols-outlined">refresh</span>
       </button>
-      <div class="flex items-center gap-2 p-1 pl-3 border border-outline-variant/30 rounded-full hover:bg-surface-container-highest/20 transition-all select-none">
+      <div
+        class="flex items-center gap-2 p-1 pl-3 border border-outline-variant/30 rounded-full hover:bg-surface-container-highest/20 transition-all select-none">
         <span class="text-xs font-bold text-on-surface-variant">Balcão Lamim</span>
-        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+        <span class="material-symbols-outlined text-secondary"
+          style="font-variation-settings: 'FILL' 1;">account_circle</span>
       </div>
     </div>
   </header>
 
   <!-- Main Content Areas -->
   <main class="ml-64 pt-24 pb-8 px-8 h-screen overflow-hidden flex flex-col">
-    
+
     <!-- View 1: Painel de Pedidos (Kanban) -->
     <div id="view-orders" class="flex-grow flex flex-col overflow-hidden h-full">
       <!-- Header Stats / KPIs -->
       <div class="grid grid-cols-4 gap-4 mb-6 select-none">
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
+        <div
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
           <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center">
             <span class="material-symbols-outlined">pending_actions</span>
           </div>
@@ -184,7 +211,8 @@
             <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Novos Pedidos</span>
           </div>
         </div>
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
+        <div
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
           <div class="w-10 h-10 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center">
             <span class="material-symbols-outlined">oven</span>
           </div>
@@ -193,7 +221,8 @@
             <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Na Cozinha</span>
           </div>
         </div>
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
+        <div
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
           <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
             <span class="material-symbols-outlined">delivery_dining</span>
           </div>
@@ -202,8 +231,10 @@
             <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Prontos</span>
           </div>
         </div>
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center" style="background-color: rgba(16,185,129,0.1); color: #10b981;">
+        <div
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center"
+            style="background-color: rgba(16,185,129,0.1); color: #10b981;">
             <span class="material-symbols-outlined">task_alt</span>
           </div>
           <div>
@@ -215,15 +246,17 @@
 
       <!-- Kanban Board Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 flex-grow h-[calc(100vh-14rem)] pb-4 overflow-hidden">
-        
+
         <!-- Column 1: Novos Pedidos -->
-        <div class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+        <div
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
               <h3 class="font-serif text-base font-bold text-primary uppercase tracking-wider">Novos Pedidos</h3>
             </div>
-            <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-xs font-bold" id="badge-pending">0</span>
+            <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-xs font-bold"
+              id="badge-pending">0</span>
           </div>
           <div class="flex-grow kanban-scroll overflow-y-auto pr-1 space-y-4" id="list-pending">
             <!-- Populated Dynamically -->
@@ -231,13 +264,15 @@
         </div>
 
         <!-- Column 2: Na Cozinha -->
-        <div class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+        <div
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
               <h3 class="font-serif text-base font-bold text-primary uppercase tracking-wider">Na Cozinha</h3>
             </div>
-            <span class="bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full text-xs font-bold" id="badge-preparing">0</span>
+            <span class="bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full text-xs font-bold"
+              id="badge-preparing">0</span>
           </div>
           <div class="flex-grow kanban-scroll overflow-y-auto pr-1 space-y-4" id="list-preparing">
             <!-- Populated Dynamically -->
@@ -245,13 +280,15 @@
         </div>
 
         <!-- Column 3: Prontos / Aguardando Motoboy -->
-        <div class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+        <div
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
               <h3 class="font-serif text-base font-bold text-primary uppercase tracking-wider">Prontos p/ Entrega</h3>
             </div>
-            <span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded-full text-xs font-bold" id="badge-ready">0</span>
+            <span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded-full text-xs font-bold"
+              id="badge-ready">0</span>
           </div>
           <div class="flex-grow kanban-scroll overflow-y-auto pr-1 space-y-4" id="list-ready">
             <!-- Populated Dynamically -->
@@ -266,9 +303,11 @@
       <div class="flex justify-between items-center mb-6">
         <div>
           <h3 class="font-serif text-2xl font-bold text-secondary">Cadastro de Produtos</h3>
-          <p class="text-xs text-outline">Cadastre novos pães ou bolos e gerencie preços, descrições e fotos dos existentes.</p>
+          <p class="text-xs text-outline">Cadastre novos pães ou bolos e gerencie preços, descrições e fotos dos
+            existentes.</p>
         </div>
-        <button id="btn-add-product" class="bg-secondary hover:brightness-105 text-white font-bold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer">
+        <button id="btn-add-product"
+          class="bg-secondary hover:brightness-105 text-white font-bold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer">
           <span class="material-symbols-outlined">add</span>
           <span>Novo Produto</span>
         </button>
@@ -288,7 +327,8 @@
         <p class="text-xs text-outline">Monitore e ajuste a quantidade disponível em estoque de cada produto.</p>
       </div>
 
-      <div class="flex-grow kanban-scroll overflow-y-auto pr-1 pb-24 bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6">
+      <div
+        class="flex-grow kanban-scroll overflow-y-auto pr-1 pb-24 bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-sm">
             <thead>
@@ -311,8 +351,9 @@
     <!-- View 4: Entregadores -->
     <div id="view-motoboys" class="hidden flex-grow flex flex-col overflow-hidden h-full">
       <div class="mb-6">
-        <h3 class="font-serif text-2xl font-bold text-secondary">Entregadores (Motoboys)</h3>
-        <p class="text-xs text-outline">Cadastre e gerencie a lista de motoboys para despacho e acompanhamento de entregas.</p>
+        <h3 class="font-serif text-2xl font-bold text-secondary">Entregadores</h3>
+        <p class="text-xs text-outline">Cadastre e gerencie a lista de motoboys para despacho e acompanhamento de
+          entregas.</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-hidden pb-24">
@@ -323,14 +364,21 @@
           </h4>
           <form id="form-motoboy" class="space-y-4" onsubmit="event.preventDefault();">
             <div class="flex flex-col gap-1.5">
-              <label for="input-motoboy-name" class="text-xs font-bold text-outline uppercase tracking-wider">Nome do Entregador</label>
-              <input type="text" id="input-motoboy-name" required class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" placeholder="Ex: Roberto Silveira" />
+              <label for="input-motoboy-name" class="text-xs font-bold text-outline uppercase tracking-wider">Nome do
+                Entregador</label>
+              <input type="text" id="input-motoboy-name" required
+                class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+                placeholder="Ex: Roberto Silveira" />
             </div>
             <div class="flex flex-col gap-1.5">
-              <label for="input-motoboy-password" class="text-xs font-bold text-outline uppercase tracking-wider">Senha de Acesso</label>
-              <input type="password" id="input-motoboy-password" required minlength="4" class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" placeholder="Mínimo 4 caracteres" />
+              <label for="input-motoboy-password" class="text-xs font-bold text-outline uppercase tracking-wider">Senha
+                de Acesso</label>
+              <input type="password" id="input-motoboy-password" required minlength="4"
+                class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+                placeholder="Mínimo 4 caracteres" />
             </div>
-            <button id="btn-save-motoboy" type="submit" class="w-full bg-secondary hover:brightness-105 text-on-primary font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+            <button id="btn-save-motoboy" type="submit"
+              class="w-full bg-secondary hover:brightness-105 text-on-primary font-bold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
               <span class="material-symbols-outlined text-sm">save</span>
               Cadastrar
             </button>
@@ -338,7 +386,8 @@
         </div>
 
         <!-- Lista de Motoboys -->
-        <div class="lg:col-span-2 bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 flex flex-col overflow-hidden h-full">
+        <div
+          class="lg:col-span-2 bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 flex flex-col overflow-hidden h-full">
           <h4 class="text-sm font-bold text-primary mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">delivery_dining</span> Entregadores Cadastrados
           </h4>
@@ -363,13 +412,19 @@
   </main>
 
   <!-- Modal: Cadastro/Edição de Produto -->
-  <div id="modal-product" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
-    <div class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl border border-outline-variant/15 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="modal-product-container">
-      
+  <div id="modal-product"
+    class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+    <div
+      class="bg-surface w-full max-w-lg rounded-2xl shadow-2xl border border-outline-variant/15 flex flex-col overflow-hidden transform scale-95 transition-transform duration-300"
+      id="modal-product-container">
+
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-outline-variant/15 bg-surface-container-low flex justify-between items-center">
+      <div
+        class="px-6 py-4 border-b border-outline-variant/15 bg-surface-container-low flex justify-between items-center">
         <h3 class="font-serif text-lg font-bold text-primary" id="modal-product-title">Novo Produto</h3>
-        <button class="text-on-surface-variant hover:text-primary p-1.5 hover:bg-surface-container-high rounded-full transition-all" id="btn-close-product-modal">
+        <button
+          class="text-on-surface-variant hover:text-primary p-1.5 hover:bg-surface-container-high rounded-full transition-all"
+          id="btn-close-product-modal">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
@@ -377,43 +432,60 @@
       <!-- Modal Form Body -->
       <form id="form-product" class="p-6 space-y-4 overflow-y-auto max-h-[60vh]" onsubmit="event.preventDefault();">
         <input type="hidden" id="form-product-id" />
-        
+
         <div class="flex flex-col gap-1.5">
-          <label for="form-product-name" class="text-xs font-bold text-outline uppercase tracking-wider">Nome do Produto</label>
-          <input type="text" id="form-product-name" required class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" placeholder="Ex: Sourdough de Azeitona" />
+          <label for="form-product-name" class="text-xs font-bold text-outline uppercase tracking-wider">Nome do
+            Produto</label>
+          <input type="text" id="form-product-name" required
+            class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+            placeholder="Ex: Sourdough de Azeitona" />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-1.5">
-            <label for="form-product-category" class="text-xs font-bold text-outline uppercase tracking-wider">Categoria</label>
-            <select id="form-product-category" required class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface">
+            <label for="form-product-category"
+              class="text-xs font-bold text-outline uppercase tracking-wider">Categoria</label>
+            <select id="form-product-category" required
+              class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface">
               <option value="paes">Pães Artesanais</option>
               <option value="bolos">Bolos Caseiros</option>
             </select>
           </div>
           <div class="flex flex-col gap-1.5">
-            <label for="form-product-price" class="text-xs font-bold text-outline uppercase tracking-wider">Preço (R$)</label>
-            <input type="number" id="form-product-price" step="0.01" min="0" required class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" placeholder="Ex: 24.90" />
+            <label for="form-product-price" class="text-xs font-bold text-outline uppercase tracking-wider">Preço
+              (R$)</label>
+            <input type="number" id="form-product-price" step="0.01" min="0" required
+              class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+              placeholder="Ex: 24.90" />
           </div>
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label for="form-product-image" class="text-xs font-bold text-outline uppercase tracking-wider">URL da Imagem</label>
-          <input type="url" id="form-product-image" required class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" placeholder="https://exemplo.com/imagem.png" />
+          <label for="form-product-image" class="text-xs font-bold text-outline uppercase tracking-wider">URL da
+            Imagem</label>
+          <input type="url" id="form-product-image" required
+            class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+            placeholder="https://exemplo.com/imagem.png" />
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label for="form-product-desc" class="text-xs font-bold text-outline uppercase tracking-wider">Descrição</label>
-          <textarea id="form-product-desc" required rows="3" class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface resize-none" placeholder="Descreva o produto, ingredientes..."></textarea>
+          <label for="form-product-desc"
+            class="text-xs font-bold text-outline uppercase tracking-wider">Descrição</label>
+          <textarea id="form-product-desc" required rows="3"
+            class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface resize-none"
+            placeholder="Descreva o produto, ingredientes..."></textarea>
         </div>
       </form>
 
       <!-- Modal Footer Actions -->
       <div class="p-6 border-t border-outline-variant/15 bg-surface-container-low flex gap-3 justify-end">
-        <button type="button" class="px-4 py-2.5 bg-surface border border-outline-variant text-on-surface-variant rounded-xl font-bold text-sm hover:bg-surface-container-high transition-all active:scale-95 cursor-pointer" id="btn-cancel-product-modal">
+        <button type="button"
+          class="px-4 py-2.5 bg-surface border border-outline-variant text-on-surface-variant rounded-xl font-bold text-sm hover:bg-surface-container-high transition-all active:scale-95 cursor-pointer"
+          id="btn-cancel-product-modal">
           Cancelar
         </button>
-        <button type="submit" form="form-product" class="bg-secondary hover:brightness-105 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2 cursor-pointer">
+        <button type="submit" form="form-product"
+          class="bg-secondary hover:brightness-105 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all active:scale-95 flex items-center gap-2 cursor-pointer">
           <span class="material-symbols-outlined text-sm">save</span>
           <span>Salvar Produto</span>
         </button>
@@ -423,16 +495,23 @@
   </div>
 
   <!-- Right Drawer Slide-over Detail Panel -->
-  <div class="fixed inset-0 z-40 bg-black/35 backdrop-blur-xs hidden opacity-0 transition-opacity duration-300" id="drawer-overlay"></div>
-  <aside class="fixed top-0 right-0 h-screen w-full max-w-md bg-surface border-l border-outline-variant/15 shadow-2xl z-50 flex flex-col translate-x-full transition-transform duration-300" id="detail-drawer">
-    
+  <div class="fixed inset-0 z-40 bg-black/35 backdrop-blur-xs hidden opacity-0 transition-opacity duration-300"
+    id="drawer-overlay"></div>
+  <aside
+    class="fixed top-0 right-0 h-screen w-full max-w-md bg-surface border-l border-outline-variant/15 shadow-2xl z-50 flex flex-col translate-x-full transition-transform duration-300"
+    id="detail-drawer">
+
     <!-- Drawer Header -->
-    <div class="px-6 py-4 border-b border-outline-variant/15 flex justify-between items-center bg-surface-container-low">
+    <div
+      class="px-6 py-4 border-b border-outline-variant/15 flex justify-between items-center bg-surface-container-low">
       <div>
         <h3 class="font-serif text-lg font-bold text-primary" id="drawer-title">Pedido #0000</h3>
-        <span class="text-[10px] text-outline uppercase font-semibold tracking-wider" id="drawer-timestamp">Recebido há 5 min</span>
+        <span class="text-[10px] text-outline uppercase font-semibold tracking-wider" id="drawer-timestamp">Recebido há
+          5 min</span>
       </div>
-      <button class="text-on-surface-variant hover:text-primary p-1.5 hover:bg-surface-container-high rounded-full transition-all" id="btn-close-drawer">
+      <button
+        class="text-on-surface-variant hover:text-primary p-1.5 hover:bg-surface-container-high rounded-full transition-all"
+        id="btn-close-drawer">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
@@ -496,7 +575,9 @@
           <span class="material-symbols-outlined text-sm">delivery_dining</span> Atribuir Entregador
         </h4>
         <div class="relative">
-          <select class="w-full bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" id="select-motoboy">
+          <select
+            class="w-full bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+            id="select-motoboy">
             <option value="">Selecione um motoboy...</option>
           </select>
         </div>
@@ -504,7 +585,8 @@
     </div>
 
     <!-- Drawer Action Footer -->
-    <div class="p-6 border-t border-outline-variant/15 bg-surface-container-low flex gap-3" id="drawer-actions-container">
+    <div class="p-6 border-t border-outline-variant/15 bg-surface-container-low flex gap-3"
+      id="drawer-actions-container">
       <!-- Rendered dynamically depending on status -->
     </div>
 
@@ -515,4 +597,5 @@
   <script src="supabase-config.js?v=1.0.1"></script>
   <script src="app.js?v=1.0.1"></script>
 </body>
+
 </html>

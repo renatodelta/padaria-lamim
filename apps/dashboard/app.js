@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const detailDrawer = document.getElementById('detail-drawer');
   const drawerOverlay = document.getElementById('drawer-overlay');
   const btnCloseDrawer = document.getElementById('btn-close-drawer');
-  
+
   const drawerTitle = document.getElementById('drawer-title');
   const drawerTimestamp = document.getElementById('drawer-timestamp');
   const drawerClientName = document.getElementById('drawer-client-name');
@@ -109,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
           notes: item.notes,
           status: item.status,
           motoboy: item.motoboy,
-          dispatchedTime: item.dispatched_at,
-          deliveredTime: item.delivered_at,
+          dispatchedTime: item.dispatched_time,
+          deliveredTime: item.delivered_time,
           timestamp: item.created_at
         }));
       }
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const timestamp = order.timestamp ? new Date(order.timestamp).getTime() : Date.now();
       const elapsedMinutes = Math.floor((Date.now() - timestamp) / (1000 * 60)) || 0;
-      
+
       const itemsList = order.items || [];
       const itemsSummary = itemsList.map(i => `${i.qty || 1}x ${i.name || 'Item'}`).join(', ');
       const address = order.clientAddress || 'Retirada na Padaria';
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error("Erro ao avançar estágio do pedido no Supabase:", err);
     }
-    
+
     if (selectedOrder && selectedOrder.id === orderId) {
       closeDrawer();
     }
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!selectedOrder) return;
 
     drawerTitle.textContent = `Pedido #${selectedOrder.id}`;
-    
+
     const timestamp = selectedOrder.timestamp ? new Date(selectedOrder.timestamp).getTime() : Date.now();
     const elapsedMinutes = Math.floor((Date.now() - timestamp) / (1000 * 60)) || 0;
     drawerTimestamp.textContent = `Recebido há ${elapsedMinutes} min`;
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const total = selectedOrder.total || 0;
 
     drawerSubtotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-    
+
     if (deliveryFee > 0) {
       drawerRowDeliveryFee.classList.remove('hidden');
       drawerDeliveryFee.textContent = `R$ ${deliveryFee.toFixed(2).replace('.', ',')}`;
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeDrawer();
       };
       drawerActionsContainer.appendChild(btnPrimary);
-    } 
+    }
     else if (selectedOrder.status === 'preparando') {
       btnPrimary.classList.add('bg-tertiary', 'hover:bg-tertiary-container');
       btnPrimary.innerHTML = '<span>Marcar como Pronto</span><span class="material-symbols-outlined text-sm">restaurant</span>';
@@ -517,31 +517,31 @@ document.addEventListener('DOMContentLoaded', () => {
         closeDrawer();
       };
       drawerActionsContainer.appendChild(btnPrimary);
-    } 
+    }
     else if (selectedOrder.status === 'pronto') {
       btnPrimary.classList.add('bg-primary', 'hover:brightness-105');
-      btnPrimary.innerHTML = '<span>Despachar com Motoboy</span><span class="material-symbols-outlined text-sm">local_shipping</span>';
+      btnPrimary.innerHTML = '<span>Enviar pedido</span><span class="material-symbols-outlined text-sm">local_shipping</span>';
       btnPrimary.onclick = async () => {
         const driver = selectMotoboy.value;
         if (!driver) {
           alert('Selecione um motoboy disponível para levar a entrega!');
           return;
         }
-        
+
         try {
           const { error } = await supabaseClient
             .from('pedidos')
             .update({
               status: 'a_caminho',
               motoboy: driver,
-              dispatched_at: new Date().toISOString()
+              dispatched_time: new Date().toISOString()
             })
             .eq('id', selectedOrder.id);
 
           if (error) throw error;
           await loadDashboardData();
           closeDrawer();
-          alert(`Pedido #${selectedOrder.id} despachado com ${driver}!`);
+          alert(`Pedido #${selectedOrder.id} enviado para o motoboy ${driver}!`);
         } catch (err) {
           console.error("Erro ao despachar pedido no Supabase:", err);
         }
@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (viewId === 'motoboys') {
       viewMotoboys.classList.remove('hidden');
       navMotoboys.className = "w-full text-left flex items-center px-6 py-3 text-secondary font-bold border-r-4 border-secondary bg-secondary-container/15 transition-transform active:scale-[0.98] cursor-pointer select-none";
-      document.querySelector('header h2').textContent = "Entregadores (Motoboys)";
+      document.querySelector('header h2').textContent = "Entregadores";
       inputSearchOrders.parentElement.classList.add('hidden');
       renderMotoboysTab();
     }
@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
     products.forEach(prod => {
       const card = document.createElement('div');
       card.className = "bg-surface-container-low border border-outline-variant/15 rounded-2xl overflow-hidden flex flex-col shadow-xs hover:shadow-md transition-all duration-300";
-      
+
       const categoryLabel = prod.category === 'paes' ? '🥖 Pão' : '🍰 Bolo';
       const categoryColor = prod.category === 'paes' ? 'bg-secondary-container/20 text-secondary' : 'bg-tertiary-container/20 text-tertiary';
 
@@ -918,7 +918,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const categoryLabel = prod.category === 'paes' ? '🥖 Pão' : '🍰 Bolo';
       const isUnlimited = prod.stock === undefined || prod.stock === null || prod.stock === "";
       const stockVal = isUnlimited ? 0 : parseInt(prod.stock, 10);
-      
+
       let statusBadgeHTML = '';
       if (isUnlimited) {
         statusBadgeHTML = '<span class="bg-emerald-500/10 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider select-none">Ilimitado</span>';
@@ -964,7 +964,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prod = products.find(p => p.id === productId);
     if (!prod) return;
     if (prod.stock === undefined || prod.stock === null) return;
-    
+
     let currentStock = parseInt(prod.stock, 10) || 0;
     const newStock = Math.max(0, currentStock + delta);
 
@@ -985,7 +985,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function updateStockValue(productId, value) {
     const prod = products.find(p => p.id === productId);
     if (!prod) return;
-    
+
     try {
       const { error } = await supabaseClient
         .from('produtos')
@@ -1003,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function toggleStockLimit(productId) {
     const prod = products.find(p => p.id === productId);
     if (!prod) return;
-    
+
     let newStock = null;
     if (prod.stock === undefined || prod.stock === null || prod.stock === "") {
       newStock = 10;
@@ -1033,11 +1033,11 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRefreshDashboard.onclick = async () => {
     const icon = btnRefreshDashboard.querySelector('span');
     icon.classList.add('animate-spin');
-    
+
     await loadProductsData();
     await loadMotoboysData();
     await loadDashboardData();
-    
+
     if (activeView === 'products') {
       renderProductsTab();
     } else if (activeView === 'stock') {

@@ -211,8 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
           notes: item.notes,
           status: item.status,
           motoboy: item.motoboy,
-          dispatchedTime: item.dispatched_at,
-          deliveredTime: item.delivered_at,
+          dispatchedTime: item.dispatched_time,
+          deliveredTime: item.delivered_time,
           timestamp: item.created_at
         }));
       } else {
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .from('pedidos')
         .update({
           status: 'entregue',
-          delivered_at: new Date().toISOString()
+          delivered_time: new Date().toISOString()
         })
         .eq('id', orderId);
 
