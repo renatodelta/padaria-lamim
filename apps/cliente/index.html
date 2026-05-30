@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Padaria Lamim | Pães e Bolos Artesanais</title>
-  
+
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Encomende os melhores pães e bolos artesanais da Padaria Lamim. Forno a lenha, receitas tradicionais e entrega quentinha na sua casa."/>
-  
+  <meta name="description"
+    content="Encomende os melhores pães e bolos artesanais da Padaria Lamim. Forno a lenha, receitas tradicionais e entrega quentinha na sua casa." />
+
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Be+Vietnam+Pro:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Be+Vietnam+Pro:wght@100;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="style.css"/>
-  
+  <link rel="stylesheet" href="style.css" />
+
   <!-- PWA Manifest & iOS Support -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
-  <link rel="manifest" href="manifest.json"/>
-  <meta name="theme-color" content="#6d574b"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <meta name="apple-mobile-web-app-title" content="Padaria Lamim"/>
-  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#6d574b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Padaria Lamim" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
+
 <body>
   <!-- Natural Paper Texture Overlay -->
   <div class="grain-texture"></div>
@@ -48,9 +54,9 @@
     <div class="header-overlay"></div>
     <div class="header-content">
       <!-- Store logo with hover animation -->
-      <img src="logo-moeda-resized.png" alt="Padaria Lamim Logo" class="store-logo" onerror="this.style.display='none'"/>
-      
-      <h1 class="store-name">Padaria Lamim</h1>
+      <img src="logo-moeda-resized.png" alt="Padaria Lamim Logo" class="store-logo"
+        onerror="this.style.display='none'" />
+
       <p class="store-subtitle">Sabor de casa em cada fatia</p>
 
       <!-- Store status and hours -->
@@ -71,8 +77,9 @@
 
     <!-- Search Bar -->
     <div class="search-container">
-      <input id="product-search" placeholder="Buscar produtos... 🍞 🍰" type="text"/>
-      <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none">
+      <input id="product-search" placeholder="Buscar produtos... 🍞 🍰" type="text" />
+      <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5"
+        fill="none">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
@@ -81,7 +88,8 @@
 
   <!-- Category Nav Bar (Horizontally scrollable below header) -->
   <nav class="category-nav" id="category-nav-bar">
-    <div class="no-scrollbar" id="category-tabs-container" style="display: flex; gap: 15px; width: 100%; justify-content: center; overflow-x: auto;">
+    <div class="no-scrollbar" id="category-tabs-container"
+      style="display: flex; gap: 15px; width: 100%; justify-content: center; overflow-x: auto;">
       <!-- Populated via JS -->
     </div>
   </nav>
@@ -91,14 +99,15 @@
     <div class="banner-content">
       <span class="banner-header-icon">🍩</span>
       <p>
-        <strong>Estamos fora do horário de atendimento,</strong> mas você pode adiantar seu pedido! Envie agora e ele será produzido assim que abrirmos.
+        <strong>Estamos fora do horário de atendimento,</strong> mas você pode adiantar seu pedido! Envie agora e ele
+        será produzido assim que abrirmos.
       </p>
     </div>
   </div>
 
   <!-- Main Split Layout Container -->
   <main class="container">
-    
+
     <!-- Menu Section (Left Column, taking 2/3 width) -->
     <section class="menu-section" id="menu-section">
       <!-- Rendered dynamically grouped by category -->
@@ -135,15 +144,15 @@
         <!-- Checkout Form -->
         <form class="checkout-form" id="checkout-form" onsubmit="event.preventDefault();">
           <h3>Finalizar Pedido</h3>
-          
+
           <div class="form-group">
             <label for="input-name">Seu Nome</label>
-            <input id="input-name" placeholder="Ex: João Silva" required type="text"/>
+            <input id="input-name" placeholder="Ex: João Silva" required type="text" />
           </div>
 
           <div class="form-group">
             <label for="input-phone">Seu Telefone / WhatsApp</label>
-            <input id="input-phone" placeholder="Ex: (11) 99999-9999" required type="text"/>
+            <input id="input-phone" placeholder="Ex: (11) 99999-9999" required type="text" />
           </div>
 
           <div class="form-group">
@@ -162,7 +171,7 @@
 
           <div class="form-group hidden" id="address-container">
             <label for="input-address">Endereço de Entrega</label>
-            <input id="input-address" placeholder="Rua, número, bairro" type="text"/>
+            <input id="input-address" placeholder="Rua, número, bairro" type="text" />
           </div>
 
           <div class="form-group">
@@ -213,7 +222,7 @@
         <div class="success-avatar-container">
           <div class="success-avatar-bg"></div>
           <div class="success-avatar-circle">
-            <img src="logo-moeda-resized.png" alt="Sucesso"/>
+            <img src="logo-moeda-resized.png" alt="Sucesso" />
           </div>
           <div class="success-check-badge">
             <span class="material-symbols-outlined" style="font-size: 16px; font-weight: 900;">check</span>
@@ -288,4 +297,5 @@
   <script src="supabase-config.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
