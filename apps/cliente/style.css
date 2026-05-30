@@ -1410,3 +1410,8 @@ h1, h2, h3, .font-serif {
     }
 }
 
+/* Classes Utilitárias Globais */
+.hidden {
+    display: none !important;
+}
+
