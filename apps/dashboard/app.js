@@ -69,11 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const navProducts = document.getElementById('nav-products');
   const navStock = document.getElementById('nav-stock');
   const navMotoboys = document.getElementById('nav-motoboys');
+  const navReports = document.getElementById('nav-reports');
 
   const viewOrders = document.getElementById('view-orders');
   const viewProducts = document.getElementById('view-products');
   const viewStock = document.getElementById('view-stock');
   const viewMotoboys = document.getElementById('view-motoboys');
+  const viewReports = document.getElementById('view-reports');
+
+  const reportsTableBody = document.getElementById('reports-table-body');
+  const reportFilterDate = document.getElementById('report-filter-date');
+  const reportFilterType = document.getElementById('report-filter-type');
+  const reportSearch = document.getElementById('report-search');
+
+  const repKpiRevenue = document.getElementById('rep-kpi-revenue');
+  const repKpiOrders = document.getElementById('rep-kpi-orders');
+  const repKpiDelivery = document.getElementById('rep-kpi-delivery');
+  const repKpiAverage = document.getElementById('rep-kpi-average');
 
   const formMotoboy = document.getElementById('form-motoboy');
   const inputMotoboyName = document.getElementById('input-motoboy-name');
@@ -135,6 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderKPIs();
     renderKanban();
+    if (activeView === 'reports') {
+      renderReportsTab();
+    }
   }
 
   // --- PRODUCTS DATA LOAD FROM SUPABASE ---
@@ -638,8 +653,9 @@ document.addEventListener('DOMContentLoaded', () => {
     viewProducts.classList.add('hidden');
     viewStock.classList.add('hidden');
     viewMotoboys.classList.add('hidden');
+    viewReports.classList.add('hidden');
 
-    const navButtons = [navOrders, navProducts, navStock, navMotoboys];
+    const navButtons = [navOrders, navProducts, navStock, navMotoboys, navReports];
     navButtons.forEach(btn => {
       btn.className = "w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none";
     });
@@ -668,6 +684,12 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('header h2').textContent = "Entregadores";
       inputSearchOrders.parentElement.classList.add('hidden');
       renderMotoboysTab();
+    } else if (viewId === 'reports') {
+      viewReports.classList.remove('hidden');
+      navReports.className = "w-full text-left flex items-center px-6 py-3 text-secondary font-bold border-r-4 border-secondary bg-secondary-container/15 transition-transform active:scale-[0.98] cursor-pointer select-none";
+      document.querySelector('header h2').textContent = "Relatório de Vendas";
+      inputSearchOrders.parentElement.classList.add('hidden');
+      renderReportsTab();
     }
   }
 
@@ -675,6 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
   navProducts.onclick = () => switchView('products');
   navStock.onclick = () => switchView('stock');
   navMotoboys.onclick = () => switchView('motoboys');
+  navReports.onclick = () => switchView('reports');
 
   // --- MOTOBOYS DATA LOAD & RENDER ---
   async function loadMotoboysData() {
@@ -1124,6 +1147,8 @@ document.addEventListener('DOMContentLoaded', () => {
       renderStockTab();
     } else if (activeView === 'motoboys') {
       renderMotoboysTab();
+    } else if (activeView === 'reports') {
+      renderReportsTab();
     }
     setTimeout(() => icon.classList.remove('animate-spin'), 600);
   };
@@ -1260,6 +1285,135 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
   }
+
+  // --- REPORTS VIEW RENDER & LOGIC ---
+  function renderReportsTab() {
+    if (!reportsTableBody) return;
+
+    const filterDateVal = reportFilterDate.value;
+    const filterTypeVal = reportFilterType.value;
+    const searchVal = reportSearch.value.trim().toLowerCase();
+
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const sevenDaysAgo = todayStart - (7 * 24 * 60 * 60 * 1000);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+    // Filter only completed/delivered orders
+    const completedOrders = orders.filter(o => o.status === 'entregue');
+
+    const filtered = completedOrders.filter(order => {
+      // Date Filter
+      const orderTime = order.timestamp ? new Date(order.timestamp).getTime() : 0;
+      let dateMatch = true;
+      if (filterDateVal === 'today') {
+        dateMatch = orderTime >= todayStart;
+      } else if (filterDateVal === '7days') {
+        dateMatch = orderTime >= sevenDaysAgo;
+      } else if (filterDateVal === 'month') {
+        dateMatch = orderTime >= monthStart;
+      }
+
+      if (!dateMatch) return false;
+
+      // Type Filter
+      const isPickup = order.clientAddress === 'Retirada na Padaria';
+      let typeMatch = true;
+      if (filterTypeVal === 'delivery') {
+        typeMatch = !isPickup;
+      } else if (filterTypeVal === 'pickup') {
+        typeMatch = isPickup;
+      }
+
+      if (!typeMatch) return false;
+
+      // Search Filter
+      let searchMatch = true;
+      if (searchVal) {
+        const clientName = order.clientName ? order.clientName.toLowerCase() : '';
+        const orderId = order.id ? order.id.toString() : '';
+        searchMatch = clientName.includes(searchVal) || orderId.includes(searchVal);
+      }
+
+      return searchMatch;
+    });
+
+    // Calculate KPIs
+    const totalRevenue = filtered.reduce((sum, o) => sum + (o.total || 0), 0);
+    const totalDelivery = filtered.reduce((sum, o) => sum + (o.deliveryFee || 0), 0);
+    const ordersCount = filtered.length;
+    const averageOrder = ordersCount > 0 ? (totalRevenue / ordersCount) : 0;
+
+    // Display KPIs
+    repKpiRevenue.textContent = `R$ ${totalRevenue.toFixed(2).replace('.', ',')}`;
+    repKpiOrders.textContent = ordersCount;
+    repKpiDelivery.textContent = `R$ ${totalDelivery.toFixed(2).replace('.', ',')}`;
+    repKpiAverage.textContent = `R$ ${averageOrder.toFixed(2).replace('.', ',')}`;
+
+    // Populate Table
+    reportsTableBody.innerHTML = '';
+
+    if (filtered.length === 0) {
+      reportsTableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="py-8 text-center text-outline opacity-60">
+            Nenhum pedido entregue encontrado com os filtros selecionados.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    filtered.forEach(order => {
+      const tr = document.createElement('tr');
+      tr.className = "border-b border-outline-variant/10 text-on-surface hover:bg-surface-container-high/40 transition-colors";
+
+      const isPickup = order.clientAddress === 'Retirada na Padaria';
+      const typeBadge = isPickup 
+        ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-success/10 text-success">
+             <span class="w-1.5 h-1.5 rounded-full bg-success"></span>Retirada
+           </span>`
+        : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600">
+             <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>Entrega
+           </span>`;
+
+      const formattedDate = order.timestamp 
+        ? new Date(order.timestamp).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : 'N/A';
+
+      const paymentText = {
+        'pix': 'PIX',
+        'cartao_entrega': 'Cartão na Entrega',
+        'dinheiro': 'Dinheiro'
+      }[order.paymentMethod] || order.paymentMethod || 'Não informado';
+
+      tr.innerHTML = `
+        <td class="py-4 px-4 font-mono font-bold text-secondary">#${order.id}</td>
+        <td class="py-4 px-4 font-bold">${order.clientName || 'Cliente'}</td>
+        <td class="py-4 px-4">${typeBadge}</td>
+        <td class="py-4 px-4 text-xs font-medium text-on-surface-variant">${formattedDate}</td>
+        <td class="py-4 px-4 text-xs font-medium text-on-surface-variant">${paymentText}</td>
+        <td class="py-4 px-4 text-right font-mono font-bold text-primary">R$ ${order.total.toFixed(2).replace('.', ',')}</td>
+        <td class="py-4 px-4 text-right">
+          <button class="px-3 py-1.5 bg-surface-container border border-outline-variant/30 text-secondary hover:text-primary hover:border-secondary/40 rounded-lg text-xs font-bold transition-all btn-view-report-detail active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 ml-auto" data-id="${order.id}">
+            <span class="material-symbols-outlined text-[14px]">visibility</span>
+            <span>Detalhes</span>
+          </button>
+        </td>
+      `;
+
+      tr.querySelector('.btn-view-report-detail').onclick = () => {
+        openDrawer(order.id);
+      };
+
+      reportsTableBody.appendChild(tr);
+    });
+  }
+
+  // Bind filter events
+  if (reportFilterDate) reportFilterDate.onchange = renderReportsTab;
+  if (reportFilterType) reportFilterType.onchange = renderReportsTab;
+  if (reportSearch) reportSearch.oninput = renderReportsTab;
 
   // --- REAL-TIME SYNC VIA SUPABASE ---
   // Inscrições Realtime para pedidos, produtos e motoboys
