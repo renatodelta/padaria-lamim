@@ -128,19 +128,7 @@ h1, h2, h3, .font-serif {
     font-style: italic;
 }
 
-.store-name-logo {
-    max-height: 110px;
-    width: auto;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-    transition: transform 0.3s ease;
-}
 
-.store-name-logo:hover {
-    transform: scale(1.03);
-}
 
 .store-subtitle {
     font-size: 1.05rem;
