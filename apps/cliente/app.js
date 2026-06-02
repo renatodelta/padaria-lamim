@@ -533,8 +533,73 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleAddress();
   };
 
-  // --- PHONE MASK LOGIC ---
+  // --- PHONE MASK LOGIC & SAVED PROFILE CHECK ---
   const inputPhone = document.getElementById('input-phone');
+  const savedProfileBox = document.getElementById('saved-profile-box');
+  const savedProfileText = document.getElementById('saved-profile-text');
+  const btnUseSavedAddress = document.getElementById('btn-use-saved-address');
+  const btnUseNewAddress = document.getElementById('btn-use-new-address');
+
+  function checkSavedProfile(phoneValue) {
+    if (!savedProfileBox || !savedProfileText) return;
+    
+    // Obter perfis
+    const profiles = JSON.parse(localStorage.getItem('padaria_lamim_profiles') || '{}');
+    const profile = profiles[phoneValue];
+    
+    if (profile) {
+      // Preencher nome automaticamente se estiver vazio
+      const inputName = document.getElementById('input-name');
+      if (inputName && !inputName.value.trim()) {
+        inputName.value = profile.name;
+      }
+      
+      if (profile.street) {
+        const addressText = `${profile.street}, nº ${profile.number}, Bairro: ${profile.neighborhood}`;
+        savedProfileText.textContent = `${profile.name} - ${addressText}`;
+        savedProfileBox.classList.remove('hidden');
+      } else {
+        savedProfileBox.classList.add('hidden');
+      }
+    } else {
+      savedProfileBox.classList.add('hidden');
+    }
+  }
+
+  if (btnUseSavedAddress) {
+    btnUseSavedAddress.onclick = () => {
+      const phoneValue = inputPhone.value;
+      const profiles = JSON.parse(localStorage.getItem('padaria_lamim_profiles') || '{}');
+      const profile = profiles[phoneValue];
+      if (profile) {
+        deliveryMethod = 'delivery';
+        if (radioDelivery) radioDelivery.checked = true;
+        if (radioPickup) radioPickup.checked = false;
+        toggleAddress();
+        inputAddressStreet.value = profile.street || '';
+        inputAddressNumber.value = profile.number || '';
+        inputAddressNeighborhood.value = profile.neighborhood || '';
+        inputAddressComplement.value = profile.complement || '';
+      }
+      savedProfileBox.classList.add('hidden');
+    };
+  }
+
+  if (btnUseNewAddress) {
+    btnUseNewAddress.onclick = () => {
+      deliveryMethod = 'delivery';
+      if (radioDelivery) radioDelivery.checked = true;
+      if (radioPickup) radioPickup.checked = false;
+      toggleAddress();
+      inputAddressStreet.value = '';
+      inputAddressNumber.value = '';
+      inputAddressNeighborhood.value = '';
+      inputAddressComplement.value = '';
+      savedProfileBox.classList.add('hidden');
+      inputAddressStreet.focus();
+    };
+  }
+
   if (inputPhone) {
     inputPhone.addEventListener('input', (e) => {
       let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
@@ -553,6 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       e.target.value = value;
+      checkSavedProfile(value);
     });
   }
 
@@ -698,6 +764,19 @@ document.addEventListener('DOMContentLoaded', () => {
         };
       } else {
         throw new Error("Não foi possível recuperar os dados inseridos.");
+      }
+
+      // Salvar perfil do cliente localmente
+      if (phone && name) {
+        const profiles = JSON.parse(localStorage.getItem('padaria_lamim_profiles') || '{}');
+        profiles[phone] = {
+          name: name,
+          street: deliveryMethod === 'delivery' ? inputAddressStreet.value.trim() : '',
+          number: deliveryMethod === 'delivery' ? inputAddressNumber.value.trim() : '',
+          neighborhood: deliveryMethod === 'delivery' ? inputAddressNeighborhood.value.trim() : '',
+          complement: deliveryMethod === 'delivery' ? inputAddressComplement.value.trim() : ''
+        };
+        localStorage.setItem('padaria_lamim_profiles', JSON.stringify(profiles));
       }
 
       // Atualizar estoques físicos de produtos no Supabase (se houver estoque limitado)

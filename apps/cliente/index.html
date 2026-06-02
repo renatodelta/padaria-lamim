@@ -155,6 +155,19 @@
           <div class="form-group">
             <label for="input-phone">Seu Telefone / WhatsApp</label>
             <input id="input-phone" placeholder="Ex: (11) 99999-9999" required minlength="14" type="text" />
+            
+            <!-- Caixa de Perfil Salvo Encontrado -->
+            <div class="hidden" id="saved-profile-box" style="background: rgba(109, 87, 75, 0.05); border: 1px dashed var(--accent); padding: 12px; border-radius: 12px; margin-top: 8px; font-size: 0.8rem; text-align: left;">
+              <p style="font-weight: 700; color: var(--accent); margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                <span class="material-symbols-outlined text-[16px]">location_on</span>
+                <span>Endereço salvo encontrado!</span>
+              </p>
+              <p id="saved-profile-text" style="color: var(--text-main); margin-bottom: 10px; line-height: 1.3; font-style: italic;"></p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" id="btn-use-saved-address" style="background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: background 0.2s;">Usar este endereço</button>
+                <button type="button" id="btn-use-new-address" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: background 0.2s;">Usar outro endereço</button>
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
