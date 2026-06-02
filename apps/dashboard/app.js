@@ -392,6 +392,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+      let notesHTML = '';
+      if (order.notes) {
+        notesHTML = `
+          <div class="flex items-center gap-1.5 mb-5 text-xs font-semibold text-error bg-error-container/30 px-3 py-2 rounded-xl border border-error/20">
+            <span class="material-symbols-outlined text-[16px]">info</span>
+            <span class="line-clamp-2">${order.notes}</span>
+          </div>
+        `;
+      }
+
       card.innerHTML = `
         <div class="flex justify-between items-start mb-3">
           <span class="text-secondary font-bold text-sm font-mono">#${order.id}</span>
@@ -405,6 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="material-symbols-outlined text-[13px] mt-0.5">location_on</span>
           <span class="line-clamp-1">${address}</span>
         </div>
+        ${notesHTML}
         <div class="mt-auto">
           ${nextButtonHTML}
         </div>
@@ -574,6 +585,16 @@ document.addEventListener('DOMContentLoaded', () => {
       'dinheiro': 'Dinheiro em espécie'
     }[selectedOrder.paymentMethod] || selectedOrder.paymentMethod || 'Não informado';
     drawerPaymentMethod.textContent = paymentText;
+
+    // Observações / Troco
+    const drawerNotesContainer = document.getElementById('drawer-notes-container');
+    const drawerNotes = document.getElementById('drawer-notes');
+    if (selectedOrder.notes) {
+      drawerNotesContainer.classList.remove('hidden');
+      drawerNotes.textContent = selectedOrder.notes;
+    } else {
+      drawerNotesContainer.classList.add('hidden');
+    }
 
     const isPickup = selectedOrder.clientAddress === 'Retirada na Padaria';
     if (selectedOrder.status === 'pronto' && !isPickup) {
