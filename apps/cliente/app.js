@@ -602,13 +602,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const payment = document.getElementById('input-payment').value;
     const notes = document.getElementById('input-notes').value.trim();
 
-    if (!name) {
-      alert("Por favor, preencha seu nome para finalizar!");
+    if (!name || name.length < 3) {
+      alert("Por favor, insira seu nome completo (mínimo de 3 letras).");
+      document.getElementById('input-name').focus();
       return;
     }
 
     if (!phone) {
       alert("Por favor, preencha seu telefone!");
+      return;
+    }
+
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phoneDigits.length < 10) {
+      alert("Por favor, insira um telefone válido com DDD (mínimo de 10 números, ex: (11) 99999-9999).");
+      document.getElementById('input-phone').focus();
+      return;
+    }
+
+    if (!payment) {
+      alert("Por favor, selecione uma forma de pagamento!");
       return;
     }
 

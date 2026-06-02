@@ -79,7 +79,7 @@
 
     <!-- Search Bar -->
     <div class="search-container">
-      <input id="product-search" placeholder="Buscar produtos... 🍞 🍰" type="text" />
+      <input id="product-search" placeholder="Buscar produtos..." type="text" />
       <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5"
         fill="none">
         <circle cx="11" cy="11" r="8"></circle>
@@ -149,12 +149,12 @@
 
           <div class="form-group">
             <label for="input-name">Seu Nome</label>
-            <input id="input-name" placeholder="Ex: João Silva" required type="text" />
+            <input id="input-name" placeholder="Ex: João Silva" required minlength="3" type="text" />
           </div>
 
           <div class="form-group">
             <label for="input-phone">Seu Telefone / WhatsApp</label>
-            <input id="input-phone" placeholder="Ex: (11) 99999-9999" required type="text" />
+            <input id="input-phone" placeholder="Ex: (11) 99999-9999" required minlength="14" type="text" />
           </div>
 
           <div class="form-group">
@@ -171,7 +171,8 @@
             </div>
           </div>
 
-          <div class="form-group hidden" id="address-container" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="form-group hidden" id="address-container"
+            style="display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; gap: 10px;">
               <div class="form-group" style="flex: 2;">
                 <label for="input-address-street">Rua</label>
@@ -205,8 +206,10 @@
 
           <div class="form-group">
             <label for="input-notes">Observações (opcional)</label>
-            <span class="input-helper-text" style="font-size: 0.72rem; color: var(--text-muted); background: rgba(109, 87, 75, 0.06); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--accent); display: block; margin-bottom: 6px; line-height: 1.4;">
-              ℹ️ <strong>Importante:</strong> Todos os nossos bolos são produzidos com cobertura padrão e não é possível retirá-la ou alterá-la.
+            <span class="input-helper-text"
+              style="font-size: 0.72rem; color: var(--text-muted); background: rgba(109, 87, 75, 0.06); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--accent); display: block; margin-bottom: 6px; line-height: 1.4;">
+              ℹ️ <strong>Importante:</strong> Todos os nossos bolos são produzidos com cobertura padrão e não é possível
+              retirá-la ou alterá-la.
             </span>
             <textarea id="input-notes" rows="2" placeholder="Ex: Troco para R$ 50, talheres..."></textarea>
           </div>
