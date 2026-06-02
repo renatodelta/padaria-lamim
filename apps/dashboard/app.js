@@ -176,59 +176,91 @@ document.addEventListener('DOMContentLoaded', () => {
         // Se o banco estiver vazio, semear os produtos iniciais diretamente no Supabase
         const defaultProducts = [
           {
-            category: 'paes',
-            name: 'Sourdough Tradicional',
-            description: 'Pão de fermentação natural de 24h, casca crocante rústica e miolo extremamente aerado.',
-            price: 24.90,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDURZ5ewq1HLTSRYLo3mJhmQB8cCH8vrEIJRKnpfvkyK6NbtMo6p7dfxElzAFF3_hVbnfzbZv1SaqDQ_Ch_01HDsIiT730wit9m7N9jNYP1dXVnZ0wOYg-9jhV-loh62hP6lXaAuahY_yPmZaB2oAhBJz3NP6KnA0SonsANaV-DfbkffTG6vPull_2690Mj5OHLG50W_yOYXPY4DcWKOZF6kUyPzWdY2V6OxcY6P4bI0j6FZYdy4gCKijV4-JEG0Xs6_11wHUWM_64I',
-            stock: null
-          },
-          {
-            category: 'paes',
-            name: 'Croissant Amanteigado',
-            description: 'Massa folhada tradicional francesa preparada com manteiga nobre extrafina.',
-            price: 12.50,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCubvmWz31qf2V3sGfp3ao8B-sJHNYGqDJ8eTOAipNj2tF0cayZY0lhzsiJFaAuo7Z0bUa6I4oQ-1Pfd7xkXejS19GcaWKQixrzUHji2pSu-ElKOSUK25sUAkaCKEmXZ5P5bfCblcuCip95Nadi5R5ShPFuqs42D2RySzbEoQAtQjN5w4Yz-7Dc3JGZc6iCVIB2C3bzK97pi7CpTJWc9lDPdV0ehc0136PUKp4ZzwkhPKwWQc6B20Wy1m-uBfFJ4Y1b4HbOOuUKLlav',
-            stock: null
-          },
-          {
-            category: 'paes',
-            name: 'Pão de Sal (Francês)',
-            description: 'O pãozinho crocante tradicional queridinho do brasileiro, quentinho e fresco.',
-            price: 0.90,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAmhZiYZkOBjp1S6MiWq3cFQePrGtPJ8Ezy7fDuhpeE_13S-DWHXtXQU0Z65mW32HATCXQtSFh7bmy6CgyXaCa4DH1XDDgFaUNddk8woNevd50j-Ezy3WHYw5pku5vWO8TMrpsiqNb_iBpCYii0zsedn2vnpJ7AfzByHxsgPvU6biTVlRgFRRUmHUDrKkMTaGrF1XzGcwkHo-br4bbwxBTpui_E4ywjof7I_vFqSMyLhuC0Bs0MbEaJziznAu9hrRcOz1G1zAo20UOg',
+            category: 'bolos',
+            name: 'Bolo de Milho',
+            description: 'Feito com milho natural colhido fresco, nossa massa é incrivelmente macia, molhadinha e perfumada — aquele sabor caseiro que lembra o bolo da vovó. Sem conservantes, sem artificiais. Puro amor em cada pedaço!',
+            price: 22.00,
+            image: 'bolos/milho.jpg',
             stock: null
           },
           {
             category: 'bolos',
-            name: 'Bolo de Cenoura com Chocolate',
-            description: 'Massa super fofinha de cenoura com cobertura generosa de brigadeiro cremoso.',
-            price: 24.99,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDbsDioPt-EBqYcTg11IBTlFHj2UqRWQAa4oWl78MreIzbf1YYwVXYC0vDp6osfqMpZtmrXDcJrejauLU709Uxvi6TYmK3oR0k1QyiVcqM99FB5wA8ER2sF9zxIcpH12Hg0Jh4QH897FBRMxjeo_OR-jjpdVfZ1js9B4sg0bGyVxxzsTdLtGhDHvIYmQ5rizwjuHEW_71_OD7Cvi6Mvcy0v3MxJ4Ls7r1rHDtQlsfufQrEfRsrFhz82Abw65_WV5BYr4ayLOaTSyheY',
+            name: 'Bolo de Laranja',
+            description: 'Feito com 100% de laranja natural, sem aromatizantes artificiais. Massa fofinha e leve, coberta com brigadeiro branco cremoso e raspinhas de laranja fresca que realçam o sabor verdadeiro da fruta.',
+            price: 22.00,
+            image: 'bolos/laranja.jpg',
+            stock: null
+          },
+          {
+            category: 'bolos',
+            name: 'Bolo de Churros',
+            description: 'O sabor que conquista à primeira mordida! Massa fofinha empanada em açúcar e canela, coberta com doce de leite cremoso feito artesanalmente. Um toque especial de carinho em cada pedaço!',
+            price: 25.00,
+            image: 'bolos/churros.jpg',
+            stock: null
+          },
+          {
+            category: 'bolos',
+            name: 'Bolo de Limão',
+            description: 'Um dos nossos queridinhos! Feito com 100% limão natural, sem essências artificiais. Massa leve e fofinha, coberta com mousse de limão cremosa e raspinhas frescas que dão o toque final refrescante e delicado.',
+            price: 22.00,
+            image: 'bolos/limao.jpg',
+            stock: null
+          },
+          {
+            category: 'bolos',
+            name: 'Bolo de Cenoura com Brigadeiro',
+            description: 'O clássico que todo mundo ama! Massa fofinha feita com cenouras frescas, sem conservantes, coberta com brigadeiro cremoso artesanal. Sabor caseiro e irresistível, perfeito para acompanhar o café!',
+            price: 25.00,
+            image: 'bolos/cenoura.jpg',
             stock: null
           },
           {
             category: 'bolos',
             name: 'Bolo de Fubá com Goiabada',
-            description: 'Bolo caseiro de fubá tradicional com cubos derretidos de goiabada cascão na massa.',
-            price: 19.99,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuARO2zy58MYs2JDEJDsiCQQFRECDxhQU6tvGvaF-J19P55VfzxzT29xMACoANw4A16P0NjGA5bHcDxHvV14qTyxpm5oI_jzRkCnkwjws0E1Vkq_iqbLW33TgzB1gwXEQstdEf-FOGSHbKAzSyebJyjmW4ZJUw-6Dgn0x9pdNZMbnsIpyRlY8kFylVPyEocgoXGcG5-xpocSDUCmiVAh8jYm_B300anSx3F5LJRXAwaBIwxUQ0LvjNaD5wYI9qnYsaT_SojA581Hy2oM',
+            description: 'O sabor do interior em cada pedaço! Massa fofinha de fubá, coberta com uma camada cremosa de goiabada artesanal. Simples, delicioso e sem conservantes — perfeito para acompanhar um café quentinho!',
+            price: 22.00,
+            image: 'bolos/fuba.jpg',
             stock: null
           },
           {
             category: 'bolos',
-            name: 'Bolo de Milho Cremoso',
-            description: 'Massa cremosa de milho verde com coco ralado, fofinho e com gostinho de fazenda.',
-            price: 22.99,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDbgoR--5YR0uWGcBfnopi_U-hWVcjcGLKfNYE9HUbtNenV_l-_ETYmYqNdJdDzXMdFbYUIoKHuyi2GzJB7tXk5C2-HDJcTINRvg8GzbG56ooZ57d2KFVymdeC7xzrfU3IRCcj6TDgC6FN6LiC0NV3_oArWTxhgQz_M0myUFlfy4La2Cj1Xt8dzpCvg7a1VYBGklxfFYvFs5h96zLnOz5R6_d23HuafxgUgki1SEgMsnfi57WztDSqnGgLAYsbf0vNTkzOWew6Z38gh',
+            name: 'Bolo de Amendoim',
+            description: 'Massa fofinha com pedacinhos de amendoim selecionados, coberta com brigadeiro branco cremoso e decorada com paçoca que dá o toque final irresistível. Delicioso e perfeito para acompanhar um café!',
+            price: 25.00,
+            image: 'bolos/amendoim.jpg',
             stock: null
           },
           {
             category: 'bolos',
-            name: 'Bolo de Laranja Fresca',
-            description: 'Preparado com suco puro de laranjas frescas e calda leve cítrica açucarada.',
-            price: 19.99,
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCubvmWz31qf2V3sGfp3ao8B-sJHNYGqDJ8eTOAipNj2tF0cayZY0lhzsiJFaAuo7Z0bUa6I4oQ-1Pfd7xkXejS19GcaWKQixrzUHji2pSu-ElKOSUK25sUAkaCKEmXZ5P5bfCblcuCip95Nadi5R5ShPFuqs42D2RySzbEoQAtQjN5w4Yz-7Dc3JGZc6iCVIB2C3bzK97pi7CpTJWc9lDPdV0ehc0136PUKp4ZzwkhPKwWQc6B20Wy1m-uBfFJ4Y1b4HbOOuUKLlav',
+            name: 'Bolo de Banana',
+            description: 'Massa fofinha, coberta com banana caramelizada fresca e um toque de canela que deixa cada fatia ainda mais saborosa. Um clássico caseiro sem conservantes, perfeito para acompanhar o café!',
+            price: 22.00,
+            image: 'bolos/banana.jpg',
+            stock: null
+          },
+          {
+            category: 'bolos',
+            name: 'Bolo de Chocolate com Brigadeiro',
+            description: 'Massa fofinha e super chocolatuda, coberta com brigadeiro cremoso artesanal que derrete na boca. Um clássico irresistível e sem conservantes, perfeito para quem ama chocolate!',
+            price: 25.00,
+            image: 'bolos/chocolate.jpg',
+            stock: null
+          },
+          {
+            category: 'bolos',
+            name: 'Bolo Formigueiro',
+            description: 'Massa fofinha com granulado, coberta com brigadeiro branco e preto e confeitada com granulado — textura e sabor em cada pedaço. Irresistível e perfeito para acompanhar o café!',
+            price: 22.00,
+            image: 'bolos/formigueiro.jpg',
+            stock: null
+          },
+          {
+            category: 'bolos',
+            name: 'Bolo Mesclado',
+            description: 'Massa mesclada branca e preta, coberta com brigadeiro branco e preto — combinando sabor e charme em cada fatia. Delicioso e sem conservantes, perfeito para acompanhar o café!',
+            price: 22.00,
+            image: 'bolos/mesclado.jpg',
             stock: null
           }
         ];
