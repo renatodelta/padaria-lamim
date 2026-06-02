@@ -374,6 +374,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
+    const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+    if (totalItems >= 10) {
+      alert("Limite máximo de 10 bolos por pedido atingido! Caso precise de uma quantidade maior, por favor entre em contato conosco diretamente.");
+      return;
+    }
+
     cart.push({
       id: product.id,
       name: product.name,
@@ -388,6 +394,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function changeQty(productId, delta) {
     const idx = cart.findIndex(item => item.id === productId);
     if (idx > -1) {
+      if (delta > 0) {
+        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+        if (totalItems >= 10) {
+          alert("Limite máximo de 10 bolos por pedido atingido! Caso precise de uma quantidade maior, por favor entre em contato conosco diretamente.");
+          return;
+        }
+      }
       cart[idx].qty += delta;
       if (cart[idx].qty <= 0) {
         cart.splice(idx, 1);
@@ -525,6 +538,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- ADDRESS NUMBER CONSTRAINT ---
+  if (inputAddressNumber) {
+    inputAddressNumber.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+    });
+  }
+
   // --- SEARCH AND FILTER ---
   productSearchInput.onkeyup = () => {
     searchQuery = productSearchInput.value;
@@ -560,6 +580,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Validar se o nome da rua contém pelo menos uma letra
+      if (!/[a-zA-ZÀ-ÿ]/.test(street)) {
+        alert("Por favor, insira um nome de rua válido (deve conter letras, ex: Rua Flores, Av. Paulista).");
+        inputAddressStreet.focus();
+        return;
+      }
+
+      // Validar se o número do endereço contém apenas números
+      if (!/^\d+$/.test(number)) {
+        alert("Por favor, insira apenas números no campo de Número.");
+        inputAddressNumber.focus();
+        return;
+      }
+
       address = `${street}, nº ${number}, Bairro: ${neighborhood}`;
       if (complement) {
         address += ` (${complement})`;
@@ -575,6 +609,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!phone) {
       alert("Por favor, preencha seu telefone!");
+      return;
+    }
+
+    const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+    if (totalItems > 10) {
+      alert("Seu pedido excede o limite máximo de 10 bolos. Por favor, reduza a quantidade no carrinho para finalizar.");
       return;
     }
 
