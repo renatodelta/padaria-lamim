@@ -125,13 +125,35 @@
     }
   </style>
   
+  <!-- PWA Manifest & iOS Support -->
   <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#6d574b"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Lamim Motoboy"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
 </head>
 <body class="min-h-screen flex justify-center items-center font-sans">
   <div class="grain-texture"></div>
 
   <!-- App simulator container -->
   <div class="app-simulator">
+    
+    <!-- PWA Install Banner -->
+    <div id="install-banner" class="bg-primary text-on-primary border-b border-accent/20 p-3 flex items-center justify-between gap-3 z-30 hidden">
+      <div class="flex items-center gap-3">
+        <img src="icon-192.png" alt="Icon" class="w-9 h-9 rounded-lg shadow-sm border border-white/10" />
+        <div class="text-left">
+          <h4 class="text-[11px] font-bold">Instalar Aplicativo</h4>
+          <p class="text-[9px] opacity-80 leading-tight">Adicione à tela inicial para trabalhar melhor!</p>
+        </div>
+      </div>
+      <div class="flex gap-1.5">
+        <button id="btn-install-app" class="bg-tertiary text-on-tertiary text-[9px] font-bold px-2.5 py-1.5 rounded-lg active:scale-95 transition-all">Instalar</button>
+        <button id="btn-install-close" class="border border-white/20 text-[9px] font-bold px-2 py-1.5 rounded-lg active:scale-95 transition-all">Não</button>
+      </div>
+    </div>
     
     <!-- Login Screen Overlay -->
     <div id="login-overlay" class="absolute inset-0 bg-background z-50 flex flex-col justify-center px-6 select-none hidden">
