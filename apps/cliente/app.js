@@ -383,6 +383,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Stock check
+    if (product.stock !== undefined && product.stock !== null && product.stock !== "") {
+      const availableStock = parseInt(product.stock, 10);
+      const cartItem = cart.find(item => item.id === productId);
+      const currentQtyInCart = cartItem ? cartItem.qty : 0;
+      if (currentQtyInCart + 1 > availableStock) {
+        alert(`Desculpe, temos apenas ${availableStock} unidade(s) de "${product.name}" em estoque.`);
+        return;
+      }
+    }
+
     cart.push({
       id: product.id,
       name: product.name,
@@ -402,6 +413,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (totalItems >= 10) {
           alert("Limite máximo de 10 bolos por pedido atingido! Caso precise de uma quantidade maior, por favor entre em contato conosco diretamente.");
           return;
+        }
+
+        // Stock check
+        const product = products.find(p => p.id === productId);
+        if (product && product.stock !== undefined && product.stock !== null && product.stock !== "") {
+          const availableStock = parseInt(product.stock, 10);
+          if (cart[idx].qty + delta > availableStock) {
+            alert(`Desculpe, temos apenas ${availableStock} unidade(s) de "${product.name}" em estoque.`);
+            return;
+          }
         }
       }
       cart[idx].qty += delta;
@@ -721,6 +742,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const total = subtotal + fee;
 
     try {
+      // 1. Buscar os estoques mais atualizados dos produtos do carrinho
+      const productIds = cart.map(item => item.id);
+      const { data: currentDbProducts, error: stockFetchError } = await supabaseClient
+        .from('produtos')
+        .select('id, name, stock')
+        .in('id', productIds);
+
+      if (stockFetchError) throw stockFetchError;
+
+      // 2. Validar o estoque antes de prosseguir
+      for (const item of cart) {
+        const dbProd = currentDbProducts.find(p => p.id === item.id);
+        if (dbProd && dbProd.stock !== undefined && dbProd.stock !== null && dbProd.stock !== "") {
+          const availableStock = parseInt(dbProd.stock, 10);
+          if (item.qty > availableStock) {
+            alert(`O estoque do bolo "${item.name}" mudou recentemente. Infelizmente, restam apenas ${availableStock} unidades disponíveis. Por favor, ajuste a quantidade no seu carrinho.`);
+            return;
+          }
+        }
+      }
+
       // Inserir pedido no Supabase com campos mapeados para snake_case
       const orderPayload = {
         client_name: name,
@@ -782,16 +824,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Atualizar estoques físicos de produtos no Supabase (se houver estoque limitado)
       for (const item of cart) {
-        const prod = products.find(p => p.id === item.id);
-        if (prod && prod.stock !== undefined && prod.stock !== null && prod.stock !== "") {
-          const currentStock = parseInt(prod.stock, 10);
-          if (currentStock > 0) {
-            const newStock = Math.max(0, currentStock - item.qty);
-            await supabaseClient
-              .from('produtos')
-              .update({ stock: newStock })
-              .eq('id', item.id);
-          }
+        const dbProd = currentDbProducts.find(p => p.id === item.id);
+        if (dbProd && dbProd.stock !== undefined && dbProd.stock !== null && dbProd.stock !== "") {
+          const currentStock = parseInt(dbProd.stock, 10);
+          const newStock = Math.max(0, currentStock - item.qty);
+          await supabaseClient
+            .from('produtos')
+            .update({ stock: newStock })
+            .eq('id', item.id);
         }
       }
 
