@@ -36,6 +36,11 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  // Interceptar apenas requisições GET
+  if (e.request.method !== 'GET') {
+    return;
+  }
+
   // Ignorar requisições ao Supabase e provedores de mapas para garantir dados em tempo real
   if (
     e.request.url.includes('supabase.co') ||
