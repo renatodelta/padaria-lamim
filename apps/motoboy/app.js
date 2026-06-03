@@ -271,10 +271,23 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Render high fidelity delivery card matching models/stitch_padaria_e_mercearia_online_4
     activeOrders.forEach(order => {
       const card = document.createElement('div');
       card.className = "space-y-4";
+      
+      let notesHTML = '';
+      if (order.notes && order.notes.trim()) {
+        notesHTML = `
+        <!-- Customer notes / Instructions -->
+        <div class="clay-card rounded-xl p-4 flex items-start gap-3">
+          <span class="material-symbols-outlined text-outline text-lg">info</span>
+          <div>
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Instrução do Cliente</p>
+            <p class="text-xs text-on-surface-variant italic mt-0.5">${order.notes}</p>
+          </div>
+        </div>
+        `;
+      }
       
       const itemsListHTML = order.items.map(item => `
         <div class="flex items-center gap-4">
@@ -358,14 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
-        <!-- Customer notes / Instructions -->
-        <div class="clay-card rounded-xl p-4 flex items-start gap-3">
-          <span class="material-symbols-outlined text-outline text-lg">info</span>
-          <div>
-            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Instrução do Cliente</p>
-            <p class="text-xs text-on-surface-variant italic mt-0.5">"Por favor, deixar na portaria se eu não atender o interfone ou buzinar no portão."</p>
-          </div>
-        </div>
+        ${notesHTML}
       `;
 
       activeDeliveryContainer.appendChild(card);
