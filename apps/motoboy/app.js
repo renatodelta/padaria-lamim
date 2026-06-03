@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .from('pedidos')
         .select('*')
         .eq('motoboy', currentRider)
-        .in('status', ['a_caminho', 'entregue'])
+        .in('status', ['a_caminho', 'aceito_motoboy', 'entregue'])
         .order('id', { ascending: false });
 
       if (error) throw error;
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
       orders = [];
     }
 
-    const active = orders.filter(o => o.status === 'a_caminho');
+    const active = orders.filter(o => o.status === 'a_caminho' || o.status === 'aceito_motoboy');
     const history = orders.filter(o => o.status === 'entregue');
 
     activeBadge.textContent = active.length;
@@ -359,7 +359,11 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `).join('');
 
-      card.innerHTML = `
+      let bannerHTML = '';
+      let actionButtonHTML = '';
+      
+      if (order.status === 'a_caminho') {
+        bannerHTML = `
         <!-- Notification Banner -->
         <div class="animate-pulse">
           <div class="bg-secondary-container/20 border border-secondary/20 p-4 rounded-xl flex items-center gap-3">
@@ -367,6 +371,27 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="text-xs font-bold text-on-secondary-fixed-variant">Nova Entrega Disponível</span>
           </div>
         </div>
+        `;
+        
+        actionButtonHTML = `
+        <!-- Accept Action -->
+        <button class="w-full bg-secondary text-on-primary py-3.5 rounded-xl font-bold text-xs shadow-sm hover:brightness-105 transition-all active:scale-95 flex justify-center items-center gap-2 btn-accept-order" data-id="${order.id}">
+          <span class="material-symbols-outlined">handshake</span>
+          <span>Aceitar pedido.</span>
+        </button>
+        `;
+      } else {
+        actionButtonHTML = `
+        <!-- Confirmation Action -->
+        <button class="w-full bg-primary text-on-primary py-3.5 rounded-xl font-bold text-xs shadow-sm hover:brightness-105 transition-all active:scale-95 flex justify-center items-center gap-2 btn-complete-order" data-id="${order.id}">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span>Confirmar entrega do Pedido</span>
+        </button>
+        `;
+      }
+
+      card.innerHTML = `
+        ${bannerHTML}
 
         <!-- Main Order Detail Card -->
         <div class="clay-card rounded-xl overflow-hidden shadow-sm flex flex-col relative">
@@ -421,11 +446,8 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
 
-            <!-- Confirmation Action -->
-            <button class="w-full bg-primary text-on-primary py-3.5 rounded-xl font-bold text-xs shadow-sm hover:brightness-105 transition-all active:scale-95 flex justify-center items-center gap-2 btn-complete-order" data-id="${order.id}">
-              <span class="material-symbols-outlined">check_circle</span>
-              <span>Confirmar Entrega Física</span>
-            </button>
+            <!-- Confirmation/Accept Action -->
+            ${actionButtonHTML}
           </div>
         </div>
 
@@ -440,6 +462,14 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.onclick = () => {
         const id = parseInt(btn.getAttribute('data-id'));
         confirmDelivery(id);
+      };
+    });
+
+    // Bind Accept order button
+    document.querySelectorAll('.btn-accept-order').forEach(btn => {
+      btn.onclick = () => {
+        const id = parseInt(btn.getAttribute('data-id'));
+        acceptOrder(id);
       };
     });
 
@@ -511,6 +541,25 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error("Erro ao confirmar entrega no Supabase:", err);
       alert("Erro ao salvar confirmação no banco de dados.");
+    }
+  }
+
+  // --- ACCEPT ORDER ACTION ---
+  async function acceptOrder(orderId) {
+    try {
+      const { error } = await supabaseClient
+        .from('pedidos')
+        .update({
+          status: 'aceito_motoboy'
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      await loadDeliveries();
+    } catch (err) {
+      console.error("Erro ao aceitar pedido no Supabase:", err);
+      alert("Erro ao salvar aceitação no banco de dados.");
     }
   }
 

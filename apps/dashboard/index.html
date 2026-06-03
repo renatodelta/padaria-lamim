@@ -255,7 +255,7 @@
       </div>
 
       <!-- Kanban Board Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 flex-grow h-[calc(100vh-14rem)] pb-4 overflow-hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 flex-grow h-[calc(100vh-14rem)] pb-4 overflow-hidden">
 
         <!-- Column 1: Novos Pedidos -->
         <div
@@ -301,6 +301,22 @@
               id="badge-ready">0</span>
           </div>
           <div class="flex-grow kanban-scroll overflow-y-auto pr-1 space-y-4" id="list-ready">
+            <!-- Populated Dynamically -->
+          </div>
+        </div>
+
+        <!-- Column 4: Em Entrega -->
+        <div
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+          <div class="flex items-center justify-between px-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+              <h3 class="font-serif text-base font-bold text-primary uppercase tracking-wider">Em Entrega</h3>
+            </div>
+            <span class="bg-success/20 text-success px-2 py-0.5 rounded-full text-xs font-bold"
+              id="badge-delivery">0</span>
+          </div>
+          <div class="flex-grow kanban-scroll overflow-y-auto pr-1 space-y-4" id="list-delivery">
             <!-- Populated Dynamically -->
           </div>
         </div>
@@ -616,6 +632,14 @@
 
     <!-- Drawer Content -->
     <div class="flex-grow overflow-y-auto p-6 space-y-6">
+      <!-- Status Section -->
+      <div class="space-y-2 border-b border-outline-variant/10 pb-4" id="drawer-status-container">
+        <h4 class="text-xs font-bold text-outline uppercase tracking-widest flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">info</span> Status do Pedido
+        </h4>
+        <div id="drawer-status-badge" class="inline-flex mt-1"></div>
+      </div>
+
       <!-- Client Section -->
       <div class="space-y-2 border-b border-outline-variant/10 pb-4">
         <h4 class="text-xs font-bold text-outline uppercase tracking-widest flex items-center gap-2">

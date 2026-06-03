@@ -29,10 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const listPending = document.getElementById('list-pending');
   const listPreparing = document.getElementById('list-preparing');
   const listReady = document.getElementById('list-ready');
+  const listDelivery = document.getElementById('list-delivery');
 
   const badgePending = document.getElementById('badge-pending');
   const badgePreparing = document.getElementById('badge-preparing');
   const badgeReady = document.getElementById('badge-ready');
+  const badgeDelivery = document.getElementById('badge-delivery');
 
   const kpiPending = document.getElementById('kpi-pending');
   const kpiPreparing = document.getElementById('kpi-preparing');
@@ -308,7 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const pendingCount = orders.filter(o => o.status === 'pendente').length;
     const preparingCount = orders.filter(o => o.status === 'preparando').length;
     const readyCount = orders.filter(o => o.status === 'pronto').length;
-    const deliveredCount = orders.filter(o => o.status === 'entregue' || o.status === 'a_caminho').length;
+    const deliveryCount = orders.filter(o => o.status === 'a_caminho' || o.status === 'aceito_motoboy').length;
+    const deliveredCount = orders.filter(o => o.status === 'entregue' || o.status === 'a_caminho' || o.status === 'aceito_motoboy').length;
 
     kpiPending.textContent = pendingCount;
     kpiPreparing.textContent = preparingCount;
@@ -318,12 +321,16 @@ document.addEventListener('DOMContentLoaded', () => {
     badgePending.textContent = pendingCount;
     badgePreparing.textContent = preparingCount;
     badgeReady.textContent = readyCount;
+    if (badgeDelivery) {
+      badgeDelivery.textContent = deliveryCount;
+    }
   }
 
   function renderKanban() {
     listPending.innerHTML = '';
     listPreparing.innerHTML = '';
     listReady.innerHTML = '';
+    if (listDelivery) listDelivery.innerHTML = '';
 
     const filteredOrders = orders.filter(order => {
       if (!searchQuery) return true;
@@ -336,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pending = filteredOrders.filter(o => o.status === 'pendente');
     const preparing = filteredOrders.filter(o => o.status === 'preparando');
     const ready = filteredOrders.filter(o => o.status === 'pronto');
+    const delivery = filteredOrders.filter(o => o.status === 'a_caminho' || o.status === 'aceito_motoboy');
 
     function createCard(order) {
       const card = document.createElement('div');
@@ -390,6 +398,40 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           `;
         }
+      } else if (order.status === 'a_caminho') {
+        const assignedDriver = order.motoboy ? `${order.motoboy}` : 'Motoboy';
+        nextButtonHTML = `
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface-container-high/50 px-3 py-1.5 rounded-lg border border-outline-variant/10">
+              <span class="material-symbols-outlined text-sm">delivery_dining</span>
+              <span class="font-semibold">${assignedDriver}</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-amber-600 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/20">
+              <span class="material-symbols-outlined text-sm animate-pulse">hourglass_empty</span>
+              <span class="font-semibold">Aguardando aceitar entrega</span>
+            </div>
+          </div>
+        `;
+      } else if (order.status === 'aceito_motoboy') {
+        const assignedDriver = order.motoboy ? `${order.motoboy}` : 'Motoboy';
+        nextButtonHTML = `
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface-container-high/50 px-3 py-1.5 rounded-lg border border-outline-variant/10">
+              <span class="material-symbols-outlined text-sm">delivery_dining</span>
+              <span class="font-semibold">${assignedDriver}</span>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-2 text-xs text-blue-600 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20">
+                <span class="material-symbols-outlined text-sm">handshake</span>
+                <span class="font-semibold">Pedido Aceito</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-success bg-success/10 px-3 py-1.5 rounded-lg border border-success/20">
+                <span class="material-symbols-outlined text-sm">route</span>
+                <span class="font-semibold">Aguardando entrega</span>
+              </div>
+            </div>
+          </div>
+        `;
       }
 
       let notesHTML = '';
@@ -460,6 +502,19 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } else {
       ready.forEach(o => listReady.appendChild(createCard(o)));
+    }
+
+    if (listDelivery) {
+      if (delivery.length === 0) {
+        listDelivery.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-12 opacity-35 select-none text-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-4xl mb-1">local_shipping</span>
+            <p class="text-xs">Nenhuma entrega ativa</p>
+          </div>
+        `;
+      } else {
+        delivery.forEach(o => listDelivery.appendChild(createCard(o)));
+      }
     }
 
     // Bind next stage button events
@@ -545,6 +600,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const elapsedMinutes = Math.floor((Date.now() - timestamp) / (1000 * 60)) || 0;
     drawerTimestamp.textContent = `Recebido há ${elapsedMinutes} min`;
 
+    // Update drawer status badge
+    const drawerStatusBadge = document.getElementById('drawer-status-badge');
+    if (drawerStatusBadge) {
+      let statusHTML = '';
+      if (selectedOrder.status === 'pendente') {
+        statusHTML = `<span class="px-3 py-1 bg-secondary-container/20 text-secondary border border-secondary/20 rounded-full text-xs font-bold">Pendente</span>`;
+      } else if (selectedOrder.status === 'preparando') {
+        statusHTML = `<span class="px-3 py-1 bg-tertiary-container/20 text-tertiary border border-tertiary/20 rounded-full text-xs font-bold">Preparando</span>`;
+      } else if (selectedOrder.status === 'pronto') {
+        statusHTML = `<span class="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold">Pronto para Entrega</span>`;
+      } else if (selectedOrder.status === 'a_caminho') {
+        statusHTML = `<span class="px-3 py-1 bg-amber-500/10 text-amber-600 border border-amber-500/20 rounded-full text-xs font-bold animate-pulse">Aguardando aceitar entrega</span>`;
+      } else if (selectedOrder.status === 'aceito_motoboy') {
+        statusHTML = `
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-1.5 text-xs text-blue-600 font-bold bg-blue-500/10 px-3 py-1 border border-blue-500/20 rounded-full">
+              <span class="material-symbols-outlined text-[14px]">handshake</span>
+              <span>Pedido Aceito</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs text-success font-bold bg-success/10 px-3 py-1 border border-success/20 rounded-full">
+              <span class="material-symbols-outlined text-[14px]">route</span>
+              <span>Aguardando entrega</span>
+            </div>
+          </div>
+        `;
+      } else if (selectedOrder.status === 'entregue') {
+        statusHTML = `<span class="px-3 py-1 bg-success/15 text-success border border-success/20 rounded-full text-xs font-bold">Pedido entregue com sucesso</span>`;
+      }
+      drawerStatusBadge.innerHTML = statusHTML;
+    }
+
     drawerClientName.textContent = selectedOrder.clientName || 'Cliente';
     drawerClientPhone.textContent = selectedOrder.clientPhone || 'Telefone não informado';
     drawerClientAddress.textContent = selectedOrder.clientAddress || 'Retirada na Padaria';
@@ -626,6 +712,19 @@ document.addEventListener('DOMContentLoaded', () => {
     drawerActionsContainer.innerHTML = '';
     if (!selectedOrder) return;
 
+    if (selectedOrder.status === 'entregue') {
+      const infoText = document.createElement('div');
+      infoText.className = "w-full text-center text-xs font-bold text-success py-3.5 bg-success/10 rounded-xl border border-success/20";
+      infoText.innerHTML = `
+        <div class="flex items-center justify-center gap-1.5" style="color: #10b981;">
+          <span class="material-symbols-outlined text-[16px]">check_circle</span>
+          <span>Pedido entregue com sucesso</span>
+        </div>
+      `;
+      drawerActionsContainer.appendChild(infoText);
+      return;
+    }
+
     const btnCancel = document.createElement('button');
     btnCancel.className = "px-4 py-3 bg-surface-container border border-error/20 text-error rounded-xl font-bold text-sm hover:bg-error-container/20 transition-all active:scale-95 cursor-pointer";
     btnCancel.textContent = "Recusar";
@@ -647,78 +746,78 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     drawerActionsContainer.appendChild(btnCancel);
 
-    const btnPrimary = document.createElement('button');
-    btnPrimary.className = "flex-grow py-3 rounded-xl font-bold text-sm text-on-primary transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer";
+    if (['pendente', 'preparando', 'pronto'].includes(selectedOrder.status)) {
+      const btnPrimary = document.createElement('button');
+      btnPrimary.className = "flex-grow py-3 rounded-xl font-bold text-sm text-on-primary transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer";
 
-    if (selectedOrder.status === 'pendente') {
-      btnPrimary.classList.add('bg-secondary', 'hover:brightness-105');
-      btnPrimary.innerHTML = '<span>Aceitar Pedido</span><span class="material-symbols-outlined text-sm">check</span>';
-      btnPrimary.onclick = async () => {
-        await advanceStage(selectedOrder.id);
-        closeDrawer();
-      };
-      drawerActionsContainer.appendChild(btnPrimary);
-    }
-    else if (selectedOrder.status === 'preparando') {
-      btnPrimary.classList.add('bg-tertiary', 'hover:bg-tertiary-container');
-      btnPrimary.innerHTML = '<span>Marcar como Pronto</span><span class="material-symbols-outlined text-sm">restaurant</span>';
-      btnPrimary.onclick = async () => {
-        await advanceStage(selectedOrder.id);
-        closeDrawer();
-      };
-      drawerActionsContainer.appendChild(btnPrimary);
-    }
-    else if (selectedOrder.status === 'pronto') {
-      const isPickup = selectedOrder.clientAddress === 'Retirada na Padaria';
-      if (isPickup) {
-        btnPrimary.classList.add('bg-success', 'hover:brightness-105');
-        btnPrimary.innerHTML = '<span>Finalizar Retirada</span><span class="material-symbols-outlined text-sm">done_all</span>';
+      if (selectedOrder.status === 'pendente') {
+        btnPrimary.classList.add('bg-secondary', 'hover:brightness-105');
+        btnPrimary.innerHTML = '<span>Aceitar Pedido</span><span class="material-symbols-outlined text-sm">check</span>';
         btnPrimary.onclick = async () => {
-          try {
-            const { error } = await supabaseClient
-              .from('pedidos')
-              .update({
-                status: 'entregue',
-                delivered_time: new Date().toISOString()
-              })
-              .eq('id', selectedOrder.id);
-
-            if (error) throw error;
-            await loadDashboardData();
-            closeDrawer();
-            alert(`Pedido #${selectedOrder.id} finalizado e entregue na loja!`);
-          } catch (err) {
-            console.error("Erro ao finalizar retirada no Supabase:", err);
-          }
+          await advanceStage(selectedOrder.id);
+          closeDrawer();
         };
-      } else {
-        btnPrimary.classList.add('bg-primary', 'hover:brightness-105');
-        btnPrimary.innerHTML = '<span>Enviar pedido</span><span class="material-symbols-outlined text-sm">local_shipping</span>';
+      }
+      else if (selectedOrder.status === 'preparando') {
+        btnPrimary.classList.add('bg-tertiary', 'hover:bg-tertiary-container');
+        btnPrimary.innerHTML = '<span>Marcar como Pronto</span><span class="material-symbols-outlined text-sm">restaurant</span>';
         btnPrimary.onclick = async () => {
-          const driver = selectMotoboy.value;
-          if (!driver) {
-            alert('Selecione um motoboy disponível para levar a entrega!');
-            return;
-          }
-
-          try {
-            const { error } = await supabaseClient
-              .from('pedidos')
-              .update({
-                status: 'a_caminho',
-                motoboy: driver,
-                dispatched_time: new Date().toISOString()
-              })
-              .eq('id', selectedOrder.id);
-
-            if (error) throw error;
-            await loadDashboardData();
-            closeDrawer();
-            alert(`Pedido #${selectedOrder.id} enviado para o motoboy ${driver}!`);
-          } catch (err) {
-            console.error("Erro ao despachar pedido no Supabase:", err);
-          }
+          await advanceStage(selectedOrder.id);
+          closeDrawer();
         };
+      }
+      else if (selectedOrder.status === 'pronto') {
+        const isPickup = selectedOrder.clientAddress === 'Retirada na Padaria';
+        if (isPickup) {
+          btnPrimary.classList.add('bg-success', 'hover:brightness-105');
+          btnPrimary.innerHTML = '<span>Finalizar Retirada</span><span class="material-symbols-outlined text-sm">done_all</span>';
+          btnPrimary.onclick = async () => {
+            try {
+              const { error } = await supabaseClient
+                .from('pedidos')
+                .update({
+                  status: 'entregue',
+                  delivered_time: new Date().toISOString()
+                })
+                .eq('id', selectedOrder.id);
+
+              if (error) throw error;
+              await loadDashboardData();
+              closeDrawer();
+              alert(`Pedido #${selectedOrder.id} finalizado e entregue na loja!`);
+            } catch (err) {
+              console.error("Erro ao finalizar retirada no Supabase:", err);
+            }
+          };
+        } else {
+          btnPrimary.classList.add('bg-primary', 'hover:brightness-105');
+          btnPrimary.innerHTML = '<span>Enviar pedido</span><span class="material-symbols-outlined text-sm">local_shipping</span>';
+          btnPrimary.onclick = async () => {
+            const driver = selectMotoboy.value;
+            if (!driver) {
+              alert('Selecione um motoboy disponível para levar a entrega!');
+              return;
+            }
+
+            try {
+              const { error } = await supabaseClient
+                .from('pedidos')
+                .update({
+                  status: 'a_caminho',
+                  motoboy: driver,
+                  dispatched_time: new Date().toISOString()
+                })
+                .eq('id', selectedOrder.id);
+
+              if (error) throw error;
+              await loadDashboardData();
+              closeDrawer();
+              alert(`Pedido #${selectedOrder.id} enviado para o motoboy ${driver}!`);
+            } catch (err) {
+              console.error("Erro ao despachar pedido no Supabase:", err);
+            }
+          };
+        }
       }
       drawerActionsContainer.appendChild(btnPrimary);
     }
