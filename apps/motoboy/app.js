@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- CONFIGURATION ---
   let currentRider = '';
   let isOnline = true;
+  let isSoundEnabled = localStorage.getItem('motoboy_sound_enabled') !== 'false';
   let orders = [];
   let motoboysList = [];
 
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnStatusToggle = document.getElementById('btn-status-toggle');
   const txtStatusLabel = document.getElementById('txt-status-label');
   const btnLogout = document.getElementById('btn-logout');
+  const btnToggleSound = document.getElementById('btn-toggle-sound');
 
   const btnTabActive = document.getElementById('btn-tab-active');
   const btnTabHistory = document.getElementById('btn-tab-history');
@@ -45,6 +47,62 @@ document.addEventListener('DOMContentLoaded', () => {
   const formLogin = document.getElementById('form-login');
   const selectLoginRider = document.getElementById('select-login-rider');
   const inputLoginPassword = document.getElementById('input-login-password');
+
+  // --- AUDIO ALERT LOGIC (Web Audio API) ---
+  function playNotificationSound() {
+    if (!isSoundEnabled) return;
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      const playTone = (freq, startTime, duration) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+        
+        gain.gain.setValueAtTime(0, startTime);
+        gain.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+      
+      const now = audioCtx.currentTime;
+      playTone(659.25, now, 0.3); // E5
+      playTone(783.99, now + 0.15, 0.4); // G5
+    } catch (e) {
+      console.error("Erro ao reproduzir áudio:", e);
+    }
+  }
+
+  function updateSoundUI() {
+    if (!btnToggleSound) return;
+    if (isSoundEnabled) {
+      btnToggleSound.className = "w-8 h-8 bg-secondary/10 text-secondary rounded-full flex items-center justify-center hover:bg-secondary-container/20 transition-all";
+      btnToggleSound.querySelector('span').textContent = 'notifications_active';
+      btnToggleSound.title = "Alerta Sonoro (Ativado)";
+    } else {
+      btnToggleSound.className = "w-8 h-8 bg-outline/10 text-outline rounded-full flex items-center justify-center hover:bg-error-container/20 transition-all";
+      btnToggleSound.querySelector('span').textContent = 'notifications_off';
+      btnToggleSound.title = "Alerta Sonoro (Desativado)";
+    }
+  }
+
+  if (btnToggleSound) {
+    btnToggleSound.onclick = () => {
+      isSoundEnabled = !isSoundEnabled;
+      localStorage.setItem('motoboy_sound_enabled', isSoundEnabled);
+      updateSoundUI();
+      if (isSoundEnabled) {
+        playNotificationSound();
+      }
+    };
+  }
 
   // --- LOAD MOTOBOYS & POPULATE SELECT ---
   async function loadMotoboys() {
@@ -524,6 +582,10 @@ document.addEventListener('DOMContentLoaded', () => {
         payload.new &&
         (payload.new.motoboy === currentRider || payload.old?.motoboy === currentRider)
       ) {
+        // Se o status mudou para 'a_caminho' e foi atribuído a este entregador
+        if (payload.new.status === 'a_caminho' && payload.new.motoboy === currentRider && payload.old?.status !== 'a_caminho') {
+          playNotificationSound();
+        }
         loadDeliveries();
       }
     })
@@ -591,5 +653,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- INITIAL LOAD ---
+  updateSoundUI();
   loadMotoboys();
 });
