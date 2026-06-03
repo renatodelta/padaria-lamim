@@ -302,9 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <!-- Real Route Google Maps Section -->
           <div class="h-48 w-full bg-surface-container-high relative overflow-hidden rounded-t-xl border-b border-outline-variant/10">
             <iframe class="w-full h-full border-none grayscale-[0.05] sepia-[0.05]" src="https://maps.google.com/maps?saddr=Padaria+Lamim,+Cruzeiro+SP&daddr=${encodeURIComponent(order.clientAddress)}&output=embed" allowfullscreen="" loading="lazy"></iframe>
-            <div class="absolute bottom-3 left-3 pointer-events-none z-10">
-              <span class="bg-white/95 text-primary font-bold text-[10px] px-2.5 py-1 rounded-full shadow-md distance-badge-${order.id}">Calculando...</span>
-            </div>
           </div>
 
           <!-- Card Info -->
@@ -372,7 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       activeDeliveryContainer.appendChild(card);
-      calculateDynamicDistance(order);
     });
 
     // Bind Complete delivery button
@@ -383,60 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
 
-    // Helper to calculate dynamic distance using Nominatim
-    function calculateDynamicDistance(order) {
-      const originLat = -22.5732;
-      const originLon = -44.9587;
-      const cacheKey = `dist_${order.id}`;
-      const cached = localStorage.getItem(cacheKey);
-      const badge = document.querySelector(`.distance-badge-${order.id}`);
-      
-      if (!badge) return;
-
-      if (cached) {
-        badge.textContent = `${cached} km de distância`;
-        return;
-      }
-
-      fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(order.clientAddress)}&format=json&limit=1`)
-        .then(res => res.json())
-        .then(data => {
-          let distStr = '2,4';
-          if (data && data.length > 0) {
-            const destLat = parseFloat(data[0].lat);
-            const destLon = parseFloat(data[0].lon);
-            
-            // Haversine formula
-            const R = 6371; // Earth radius in km
-            const dLat = (destLat - originLat) * Math.PI / 180;
-            const dLon = (destLon - originLon) * Math.PI / 180;
-            const a = 
-              Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(originLat * Math.PI / 180) * Math.cos(destLat * Math.PI / 180) * 
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            let distance = R * c * 1.35;
-            
-            if (isNaN(distance) || distance < 0.2) {
-              const hash = order.clientAddress.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-              distance = 1.5 + (hash % 35) / 10;
-            }
-            distStr = distance.toFixed(1).replace('.', ',');
-          } else {
-            const hash = order.clientAddress.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const distance = 1.5 + (hash % 35) / 10;
-            distStr = distance.toFixed(1).replace('.', ',');
-          }
-          localStorage.setItem(cacheKey, distStr);
-          badge.textContent = `${distStr} km de distância`;
-        })
-        .catch(() => {
-          const hash = order.clientAddress.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-          const distance = 1.5 + (hash % 35) / 10;
-          const distStr = distance.toFixed(1).replace('.', ',');
-          badge.textContent = `${distStr} km de distância`;
-        });
-    }
   }
 
   // --- RENDER HISTORY ---
