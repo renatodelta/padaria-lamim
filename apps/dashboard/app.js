@@ -94,6 +94,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputMotoboyPassword = document.getElementById('input-motoboy-password');
   const motoboysTableBody = document.getElementById('motoboys-table-body');
 
+  // Settings View Elements
+  const navSettings = document.getElementById('nav-settings');
+  const viewSettings = document.getElementById('view-settings');
+  const formSettings = document.getElementById('form-settings');
+  const inputSettingsWhatsapp = document.getElementById('input-settings-whatsapp');
+  const inputSettingsAddress = document.getElementById('input-settings-address');
+  const inputSettingsOpening = document.getElementById('input-settings-opening');
+  const inputSettingsClosing = document.getElementById('input-settings-closing');
+  const inputSettingsDeliveryFee = document.getElementById('input-settings-delivery-fee');
+  const inputSettingsMaxItems = document.getElementById('input-settings-max-items');
+
   const productsListContainer = document.getElementById('products-list-container');
   const stockTableBody = document.getElementById('stock-table-body');
 
@@ -832,8 +843,9 @@ document.addEventListener('DOMContentLoaded', () => {
     viewStock.classList.add('hidden');
     viewMotoboys.classList.add('hidden');
     viewReports.classList.add('hidden');
+    if (viewSettings) viewSettings.classList.add('hidden');
 
-    const navButtons = [navOrders, navProducts, navStock, navMotoboys, navReports];
+    const navButtons = [navOrders, navProducts, navStock, navMotoboys, navReports, navSettings].filter(Boolean);
     navButtons.forEach(btn => {
       btn.className = "w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none";
     });
@@ -868,6 +880,12 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('header h2').textContent = "Relatório de Vendas";
       inputSearchOrders.parentElement.classList.add('hidden');
       renderReportsTab();
+    } else if (viewId === 'settings') {
+      if (viewSettings) viewSettings.classList.remove('hidden');
+      if (navSettings) navSettings.className = "w-full text-left flex items-center px-6 py-3 text-secondary font-bold border-r-4 border-secondary bg-secondary-container/15 transition-transform active:scale-[0.98] cursor-pointer select-none";
+      document.querySelector('header h2').textContent = "Configurações";
+      inputSearchOrders.parentElement.classList.add('hidden');
+      loadSettingsData();
     }
   }
 
@@ -876,6 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
   navStock.onclick = () => switchView('stock');
   navMotoboys.onclick = () => switchView('motoboys');
   navReports.onclick = () => switchView('reports');
+  if (navSettings) navSettings.onclick = () => switchView('settings');
 
   // --- MOTOBOYS DATA LOAD & RENDER ---
   async function loadMotoboysData() {
@@ -1711,6 +1730,86 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     })
     .subscribe();
+
+  // --- SETTINGS LOGIC ---
+  async function loadSettingsData() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('configuracoes')
+        .select('*');
+
+      if (error) throw error;
+
+      // Map values
+      const config = {};
+      if (data) {
+        data.forEach(item => {
+          config[item.chave] = item.valor;
+        });
+      }
+
+      // Preencher formulário com fallbacks
+      inputSettingsWhatsapp.value = config['whatsapp_phone'] || localStorage.getItem('config_whatsapp_phone') || '(12) 99753-1707';
+      inputSettingsAddress.value = config['store_address'] || localStorage.getItem('config_store_address') || 'Retirada na Padaria';
+      inputSettingsOpening.value = config['opening_time'] || localStorage.getItem('config_opening_time') || '06:00';
+      inputSettingsClosing.value = config['closing_time'] || localStorage.getItem('config_closing_time') || '20:00';
+      inputSettingsDeliveryFee.value = config['delivery_fee'] || localStorage.getItem('config_delivery_fee') || '4.00';
+      inputSettingsMaxItems.value = config['max_items_order'] || localStorage.getItem('config_max_items_order') || '10';
+
+    } catch (err) {
+      console.warn("Erro ao buscar configurações do Supabase. Carregando dados locais.", err);
+      // Fallback local
+      inputSettingsWhatsapp.value = localStorage.getItem('config_whatsapp_phone') || '(12) 99753-1707';
+      inputSettingsAddress.value = localStorage.getItem('config_store_address') || 'Retirada na Padaria';
+      inputSettingsOpening.value = localStorage.getItem('config_opening_time') || '06:00';
+      inputSettingsClosing.value = localStorage.getItem('config_closing_time') || '20:00';
+      inputSettingsDeliveryFee.value = localStorage.getItem('config_delivery_fee') || '4.00';
+      inputSettingsMaxItems.value = localStorage.getItem('config_max_items_order') || '10';
+    }
+  }
+
+  if (formSettings) {
+    formSettings.onsubmit = async (e) => {
+      e.preventDefault();
+
+      const btnText = document.getElementById('btn-save-settings-text');
+      const btnIcon = document.getElementById('btn-save-settings-icon');
+
+      if (btnText) btnText.textContent = "Salvando...";
+      if (btnIcon) btnIcon.textContent = "sync";
+
+      const payload = [
+        { chave: 'whatsapp_phone', valor: inputSettingsWhatsapp.value.trim() },
+        { chave: 'store_address', valor: inputSettingsAddress.value.trim() },
+        { chave: 'opening_time', valor: inputSettingsOpening.value.trim() },
+        { chave: 'closing_time', valor: inputSettingsClosing.value.trim() },
+        { chave: 'delivery_fee', valor: parseFloat(inputSettingsDeliveryFee.value).toFixed(2) },
+        { chave: 'max_items_order', valor: parseInt(inputSettingsMaxItems.value, 10).toString() }
+      ];
+
+      // Salvar em localStorage primeiro como garantia
+      payload.forEach(item => {
+        localStorage.setItem(`config_${item.chave}`, item.valor);
+      });
+
+      try {
+        // Enviar para o Supabase
+        const { error } = await supabaseClient
+          .from('configuracoes')
+          .upsert(payload, { onConflict: 'chave' });
+
+        if (error) throw error;
+        
+        alert("Configurações salvas com sucesso!");
+      } catch (err) {
+        console.error("Erro ao salvar configurações no Supabase:", err);
+        alert("Configurações salvas localmente (tabela 'configuracoes' não encontrada ou falha no Supabase).");
+      } finally {
+        if (btnText) btnText.textContent = "Salvar Configurações";
+        if (btnIcon) btnIcon.textContent = "save";
+      }
+    };
+  }
 
   const motoboysSubscription = supabaseClient
     .channel('public:motoboys')

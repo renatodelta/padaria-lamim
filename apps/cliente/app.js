@@ -8,9 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let products = [];
   let searchQuery = '';
   let deliveryMethod = 'retirada'; // Default to pickup
-  const deliveryFee = 4.00;
+  let deliveryFee = 4.00;
+  let maxItemsLimit = 10;
+  let whatsappSupportNumber = '5512997531707'; // default WhatsApp
+  let storeAddressText = 'Retirada na Padaria';
   
-  const storeData = {
+  let storeData = {
     name: "Padaria Lamim",
     openingTime: "06:00",
     closingTime: "20:00"
@@ -385,8 +388,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!product) return;
 
     const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-    if (totalItems >= 10) {
-      alert("Limite máximo de 10 bolos por pedido atingido! Caso precise de uma quantidade maior, por favor entre em contato conosco diretamente.");
+    if (totalItems >= maxItemsLimit) {
+      alert(`Limite máximo de ${maxItemsLimit} bolos por pedido atingido! Caso precise de uma quantidade maior, por favor entre em contato conosco diretamente.`);
       return;
     }
 
@@ -417,8 +420,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (idx > -1) {
       if (delta > 0) {
         const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-        if (totalItems >= 10) {
-          alert("Limite máximo de 10 bolos por pedido atingido! Caso precise de uma quantidade maior, por favor entre em contato conosco diretamente.");
+        if (totalItems >= maxItemsLimit) {
+          alert(`Limite máximo de ${maxItemsLimit} bolos por pedido atingido! Caso precise de uma quantidade maior, por favor entre em contato conosco diretamente.`);
           return;
         }
 
@@ -739,8 +742,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-    if (totalItems > 10) {
-      alert("Seu pedido excede o limite máximo de 10 bolos. Por favor, reduza a quantidade no carrinho para finalizar.");
+    if (totalItems > maxItemsLimit) {
+      alert(`Seu pedido excede o limite máximo de ${maxItemsLimit} bolos. Por favor, reduza a quantidade no carrinho para finalizar.`);
       return;
     }
 
@@ -1048,15 +1051,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (trackingModalOrderId) trackingModalOrderId.textContent = `#${orderId}`;
 
     // Set address and payment info in modal
-    if (trackingAddress) trackingAddress.textContent = order.client_address;
+    if (trackingAddress) {
+      trackingAddress.textContent = isDelivery ? order.client_address : `Retirar em: ${storeAddressText}`;
+    }
     if (trackingPaymentTotal) {
       trackingPaymentTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')} • ${paymentText}`;
     }
-
+ 
     // Set WhatsApp link for support
     if (btnTrackingSupportWhatsapp) {
       const whatsappMsg = `Olá, gostaria de informações sobre o meu pedido #${orderId}.`;
-      btnTrackingSupportWhatsapp.href = `https://wa.me/5512997531707?text=${encodeURIComponent(whatsappMsg)}`;
+      btnTrackingSupportWhatsapp.href = `https://wa.me/${whatsappSupportNumber}?text=${encodeURIComponent(whatsappMsg)}`;
     }
 
     // Map status to steps
@@ -1181,7 +1186,79 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnTrackingCloseModal) btnTrackingCloseModal.classList.remove('hidden');
     }
   }
-
+ 
+  // --- LOAD DYNAMIC SETTINGS ---
+  async function loadDynamicSettings() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('configuracoes')
+        .select('*');
+ 
+      if (error) throw error;
+ 
+      if (data) {
+        const config = {};
+        data.forEach(item => {
+          config[item.chave] = item.valor;
+        });
+ 
+        if (config['whatsapp_phone']) {
+          const cleanPhone = config['whatsapp_phone'].replace(/\D/g, "");
+          whatsappSupportNumber = cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone;
+        }
+        if (config['store_address']) {
+          storeAddressText = config['store_address'];
+        }
+        if (config['opening_time']) {
+          storeData.openingTime = config['opening_time'];
+        }
+        if (config['closing_time']) {
+          storeData.closingTime = config['closing_time'];
+        }
+        if (config['delivery_fee']) {
+          deliveryFee = parseFloat(config['delivery_fee']);
+        }
+        if (config['max_items_order']) {
+          maxItemsLimit = parseInt(config['max_items_order'], 10);
+        }
+ 
+        console.log("Configurações dinâmicas carregadas com sucesso:", {
+          deliveryFee,
+          maxItemsLimit,
+          whatsappSupportNumber,
+          storeData
+        });
+      }
+    } catch (err) {
+      console.warn("Falha ao carregar configurações do Supabase. Usando fallbacks locais.", err);
+      // Fallback a partir do localStorage
+      const cachedFee = localStorage.getItem('config_delivery_fee');
+      if (cachedFee) deliveryFee = parseFloat(cachedFee);
+ 
+      const cachedMax = localStorage.getItem('config_max_items_order');
+      if (cachedMax) maxItemsLimit = parseInt(cachedMax, 10);
+ 
+      const cachedOpening = localStorage.getItem('config_opening_time');
+      if (cachedOpening) storeData.openingTime = cachedOpening;
+ 
+      const cachedClosing = localStorage.getItem('config_closing_time');
+      if (cachedClosing) storeData.closingTime = cachedClosing;
+ 
+      const cachedPhone = localStorage.getItem('config_whatsapp_phone');
+      if (cachedPhone) {
+        const cleanPhone = cachedPhone.replace(/\D/g, "");
+        whatsappSupportNumber = cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone;
+      }
+      
+      const cachedAddress = localStorage.getItem('config_store_address');
+      if (cachedAddress) storeAddressText = cachedAddress;
+    }
+ 
+    // Atualiza status e cálculos baseado nas novas configurações
+    checkStoreStatus();
+    calculateTotals();
+  }
+ 
   function initOrderTracking() {
     const activeOrderId = localStorage.getItem('padaria_lamim_active_order_id');
     if (activeOrderId) {
@@ -1253,13 +1330,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- INITIAL SETUP ---
-  checkStoreStatus();
-  renderCategoryNav();
-  loadProductsFromSupabase();
-  updateCartUI();
-  toggleAddress();
-  toggleNotes();
-  initOrderTracking();
+  loadDynamicSettings().then(() => {
+    renderCategoryNav();
+    loadProductsFromSupabase();
+    updateCartUI();
+    toggleAddress();
+    toggleNotes();
+    initOrderTracking();
+  });
 
   // Update status every minute
   setInterval(checkStoreStatus, 60000);

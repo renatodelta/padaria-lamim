@@ -154,6 +154,11 @@
         <span class="material-symbols-outlined mr-3">assessment</span>
         <span class="text-sm">Relatório</span>
       </button>
+      <button id="nav-settings"
+        class="w-full text-left flex items-center px-6 py-3 text-on-surface-variant font-medium hover:text-secondary hover:bg-surface-container-high transition-colors cursor-pointer select-none">
+        <span class="material-symbols-outlined mr-3">settings</span>
+        <span class="text-sm">Configurações</span>
+      </button>
     </nav>
 
     <div class="px-6 mt-auto space-y-2 border-t border-outline-variant/10 pt-4">
@@ -519,6 +524,82 @@
               <!-- Populated Dynamically -->
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- View 6: Configurações -->
+    <div id="view-settings" class="hidden flex-grow flex flex-col overflow-hidden h-full">
+      <div class="mb-6">
+        <h3 class="font-serif text-2xl font-bold text-secondary">Configurações da Loja</h3>
+        <p class="text-xs text-outline">Gerencie as regras de negócio, horários de atendimento, taxas de entrega e informações do WhatsApp.</p>
+      </div>
+
+      <div class="flex-grow overflow-y-auto kanban-scroll pr-1 pb-24">
+        <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 max-w-2xl">
+          <form id="form-settings" class="space-y-6" onsubmit="event.preventDefault();">
+            
+            <h4 class="text-sm font-bold text-primary border-b border-outline-variant/10 pb-2 flex items-center gap-2">
+              <span class="material-symbols-outlined text-lg">call</span> Atendimento & WhatsApp
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="input-settings-whatsapp" class="text-xs font-bold text-outline uppercase tracking-wider">Telefone do WhatsApp (com DDD)</label>
+                <input type="text" id="input-settings-whatsapp" required
+                  class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+                  placeholder="Ex: (12) 99753-1707" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="input-settings-address" class="text-xs font-bold text-outline uppercase tracking-wider">Endereço da Loja (para Retirada)</label>
+                <input type="text" id="input-settings-address" required
+                  class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+                  placeholder="Ex: Rua Principal, 123 - Centro" />
+              </div>
+            </div>
+
+            <h4 class="text-sm font-bold text-primary border-b border-outline-variant/10 pb-2 flex items-center gap-2">
+              <span class="material-symbols-outlined text-lg">schedule</span> Horário de Funcionamento
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="input-settings-opening" class="text-xs font-bold text-outline uppercase tracking-wider">Horário de Abertura</label>
+                <input type="time" id="input-settings-opening" required
+                  class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="input-settings-closing" class="text-xs font-bold text-outline uppercase tracking-wider">Horário de Fechamento</label>
+                <input type="time" id="input-settings-closing" required
+                  class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface" />
+              </div>
+            </div>
+
+            <h4 class="text-sm font-bold text-primary border-b border-outline-variant/10 pb-2 flex items-center gap-2">
+              <span class="material-symbols-outlined text-lg">local_shipping</span> Logística & Carrinho
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="input-settings-delivery-fee" class="text-xs font-bold text-outline uppercase tracking-wider">Taxa de Entrega (R$)</label>
+                <input type="number" id="input-settings-delivery-fee" step="0.01" min="0" required
+                  class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+                  placeholder="Ex: 4.00" />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="input-settings-max-items" class="text-xs font-bold text-outline uppercase tracking-wider">Limite de Bolos p/ Pedido</label>
+                <input type="number" id="input-settings-max-items" min="1" required
+                  class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+                  placeholder="Ex: 10" />
+              </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+              <button id="btn-save-settings" type="submit"
+                class="bg-secondary hover:brightness-105 text-on-primary font-bold py-3 px-6 rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer">
+                <span class="material-symbols-outlined text-sm" id="btn-save-settings-icon">save</span>
+                <span id="btn-save-settings-text">Salvar Configurações</span>
+              </button>
+            </div>
+
+          </form>
         </div>
       </div>
     </div>
