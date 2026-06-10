@@ -566,6 +566,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   radioPickup.onchange = () => {
     deliveryMethod = 'retirada';
+    gpsCoords = null;
+    if (gpsStatus) {
+      gpsStatus.classList.add('hidden');
+      gpsStatus.textContent = '';
+    }
     toggleAddress();
   };
 
@@ -665,6 +670,79 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- GEOLOCATION GPS LOGIC ---
+  let gpsCoords = null;
+  const btnGetLocation = document.getElementById('btn-get-location');
+  const gpsStatus = document.getElementById('gps-status');
+
+  if (btnGetLocation && gpsStatus) {
+    btnGetLocation.onclick = () => {
+      gpsStatus.classList.remove('hidden');
+      gpsStatus.style.color = 'var(--text-muted)';
+      gpsStatus.textContent = 'Solicitando acesso ao GPS...';
+      gpsCoords = null;
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          gpsCoords = { lat, lon };
+
+          gpsStatus.textContent = 'Coordenadas obtidas! Identificando endereço...';
+
+          try {
+            // Chamada de geocodificação reversa para o Nominatim do OpenStreetMap
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`);
+            if (!response.ok) throw new Error("Erro na requisição Nominatim");
+            
+            const data = await response.json();
+            if (data && data.address) {
+              const street = data.address.road || data.address.suburb || data.address.pedestrian || '';
+              const neighborhood = data.address.suburb || data.address.neighbourhood || data.address.city_district || data.address.quarter || '';
+              const houseNumber = data.address.house_number || '';
+
+              if (inputAddressStreet) inputAddressStreet.value = street;
+              if (inputAddressNeighborhood) inputAddressNeighborhood.value = neighborhood;
+              if (inputAddressNumber && houseNumber) {
+                inputAddressNumber.value = houseNumber;
+              } else if (inputAddressNumber) {
+                inputAddressNumber.value = '';
+                inputAddressNumber.focus();
+              }
+
+              gpsStatus.style.color = 'var(--success)';
+              gpsStatus.textContent = '📍 Endereço preenchido com sucesso pelo GPS!';
+            } else {
+              throw new Error("Endereço não localizado para essas coordenadas.");
+            }
+          } catch (err) {
+            console.error("Erro no geocoding reverso:", err);
+            gpsStatus.style.color = 'var(--accent)';
+            gpsStatus.textContent = '⚠️ GPS ativo, mas não conseguimos traduzir o endereço. Por favor, digite manualmente.';
+          }
+        },
+        (error) => {
+          console.error("Erro de geolocalização:", error);
+          gpsStatus.style.color = 'var(--danger)';
+          let errorMsg = '⚠️ Não foi possível obter o GPS. Por favor, digite seu endereço.';
+          if (error.code === error.PERMISSION_DENIED) {
+            errorMsg = '🔒 Permissão de GPS negada. Por favor, digite seu endereço manualmente.';
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            errorMsg = '📡 Sinal de GPS indisponível. Por favor, digite seu endereço.';
+          } else if (error.code === error.TIMEOUT) {
+            errorMsg = '⏳ Tempo limite de requisição do GPS atingido. Digite manualmente.';
+          }
+          gpsStatus.textContent = errorMsg;
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    };
+  }
+
   // --- SEARCH AND FILTER ---
   productSearchInput.onkeyup = () => {
     searchQuery = productSearchInput.value;
@@ -717,6 +795,9 @@ document.addEventListener('DOMContentLoaded', () => {
       address = `${street}, nº ${number}, Bairro: ${neighborhood}`;
       if (complement) {
         address += ` (${complement})`;
+      }
+      if (gpsCoords) {
+        address += ` | GPS: https://www.google.com/maps/search/?api=1&query=${gpsCoords.lat},${gpsCoords.lon}`;
       }
     }
     const payment = document.getElementById('input-payment').value;
@@ -910,6 +991,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear state
     cart = [];
     currentOrder = null;
+    gpsCoords = null;
+    if (gpsStatus) {
+      gpsStatus.classList.add('hidden');
+      gpsStatus.textContent = '';
+    }
     checkoutForm.reset();
     productSearchInput.value = '';
     searchQuery = '';

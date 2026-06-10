@@ -198,6 +198,14 @@
 
           <div class="form-group hidden" id="address-container"
             style="display: flex; flex-direction: column; gap: 14px;">
+            
+            <!-- GPS Location Button -->
+            <button type="button" id="btn-get-location" class="btn-location-gps">
+              <span class="material-symbols-outlined">my_location</span>
+              <span>Usar minha localização atual (GPS)</span>
+            </button>
+            <div id="gps-status" class="hidden text-xs text-center font-semibold" style="margin-top: -6px; margin-bottom: 2px;"></div>
+
             <div style="display: flex; gap: 10px;">
               <div class="form-group" style="flex: 2;">
                 <label for="input-address-street">Rua</label>

@@ -1907,4 +1907,37 @@ h1, h2, h3, .font-serif {
     animation: spin 3s linear infinite;
 }
 
+/* GPS Location Button styling */
+.btn-location-gps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(109, 87, 75, 0.08);
+    border: 1px dashed var(--accent);
+    color: var(--accent);
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    font-family: inherit;
+}
+
+.btn-location-gps:hover {
+    background: rgba(109, 87, 75, 0.15);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-location-gps:active {
+    transform: scale(0.98);
+}
+
+.btn-location-gps span {
+    font-size: 18px;
+}
+
 
