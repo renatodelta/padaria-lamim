@@ -224,6 +224,11 @@ document.addEventListener('DOMContentLoaded', () => {
       storeStatusBadge.className = "status-badge closed";
       closedBanner.classList.remove('hidden');
     }
+
+    const openingHoursEl = document.querySelector('.opening-hours');
+    if (openingHoursEl) {
+      openingHoursEl.textContent = `🕒 Seg a Dom: ${storeData.openingTime} às ${storeData.closingTime}`;
+    }
   }
 
   // --- CATEGORIES NAV BAR ---
