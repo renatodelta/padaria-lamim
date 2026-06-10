@@ -688,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const name = document.getElementById('input-name').value.trim();
     const phone = document.getElementById('input-phone').value.trim();
-    let address = 'Retirada na Padaria';
+    let address = `Retirada na Padaria (${storeAddressText})`;
     if (deliveryMethod === 'delivery') {
       const street = inputAddressStreet.value.trim();
       const number = inputAddressNumber.value.trim();
@@ -1033,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const orderId = order.id;
     const status = order.status;
-    const isDelivery = order.client_address !== 'Retirada na Padaria';
+    const isDelivery = !order.client_address.startsWith('Retirada na Padaria');
     const total = parseFloat(order.total);
     const payment = order.payment_method;
 

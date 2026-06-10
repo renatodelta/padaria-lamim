@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         `;
       } else if (order.status === 'pronto') {
-        const isPickup = order.clientAddress === 'Retirada na Padaria';
+        const isPickup = order.clientAddress && order.clientAddress.startsWith('Retirada na Padaria');
         if (isPickup) {
           nextButtonHTML = `
             <div class="space-y-2">
@@ -693,7 +693,7 @@ document.addEventListener('DOMContentLoaded', () => {
       drawerNotesContainer.classList.add('hidden');
     }
 
-    const isPickup = selectedOrder.clientAddress === 'Retirada na Padaria';
+    const isPickup = selectedOrder.clientAddress && selectedOrder.clientAddress.startsWith('Retirada na Padaria');
     if (selectedOrder.status === 'pronto' && !isPickup) {
       drawerMotoboyAssignPanel.classList.remove('hidden');
       selectMotoboy.value = selectedOrder.motoboy || '';
@@ -778,7 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
       }
       else if (selectedOrder.status === 'pronto') {
-        const isPickup = selectedOrder.clientAddress === 'Retirada na Padaria';
+        const isPickup = selectedOrder.clientAddress && selectedOrder.clientAddress.startsWith('Retirada na Padaria');
         if (isPickup) {
           btnPrimary.classList.add('bg-success', 'hover:brightness-105');
           btnPrimary.innerHTML = '<span>Finalizar Retirada</span><span class="material-symbols-outlined text-sm">done_all</span>';
