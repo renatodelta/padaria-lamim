@@ -965,6 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('padaria_lamim_active_order_id');
       if (trackingFloatingBar) {
         trackingFloatingBar.classList.remove('active');
+        trackingFloatingBar.classList.add('hidden');
       }
       if (trackingModalOverlay) {
         trackingModalOverlay.classList.remove('active');
@@ -1038,6 +1039,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show floating bar
     if (trackingFloatingBar) {
+      trackingFloatingBar.classList.remove('hidden');
       trackingFloatingBar.classList.add('active');
     }
 
