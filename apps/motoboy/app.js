@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let isSoundEnabled = localStorage.getItem('motoboy_sound_enabled') !== 'false';
   let orders = [];
   let motoboysList = [];
+  let bakeryPhone = '5512997531707'; // Default fallback
+
 
   // --- UI ELEMENTS ---
   const txtRiderName = document.getElementById('txt-rider-name');
@@ -108,6 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
         playNotificationSound();
       }
     };
+  }
+
+  // --- LOAD BAKERY PHONE ---
+  async function loadBakeryPhone() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('configuracoes')
+        .select('*')
+        .eq('chave', 'whatsapp_phone')
+        .single();
+      if (data && data.valor) {
+        const cleanPhone = data.valor.replace(/\D/g, "");
+        bakeryPhone = cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone;
+      }
+    } catch (e) {
+      console.warn("Erro ao carregar telefone da padaria:", e);
+    }
   }
 
   // --- LOAD MOTOBOYS & POPULATE SELECT ---
@@ -447,9 +466,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   <span>Google Maps</span>
                 </a>
                 <a class="inline-flex items-center gap-1.5 text-success font-bold text-[11px] py-1.5 px-3 bg-success/10 rounded-full hover:bg-success/20 transition-all active:scale-95 text-decoration-none" 
-                   href="https://wa.me/55${order.clientPhone.replace(/\D/g, '')}" target="_blank" style="color: #10b981;">
+                   href="https://wa.me/${bakeryPhone}?text=${encodeURIComponent(`Olá, estou com dificuldades na entrega do pedido #${order.id} para o cliente ${order.clientName}.`)}" target="_blank" style="color: #10b981;">
                   <span class="material-symbols-outlined text-xs">chat</span>
-                  <span>WhatsApp</span>
+                  <span>WhatsApp Padaria</span>
                 </a>
               </div>
             </div>
@@ -721,5 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- INITIAL LOAD ---
   updateSoundUI();
-  loadMotoboys();
+  loadBakeryPhone().finally(() => {
+    loadMotoboys();
+  });
 });
