@@ -2,7 +2,7 @@
   "name": "Lamim Motoboy",
   "short_name": "Entregador",
   "description": "Aplicativo para os entregadores da Padaria Lamim gerenciarem rotas e entregas.",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#fefae0",
   "theme_color": "#6d574b",

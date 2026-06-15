@@ -2,7 +2,7 @@
   "name": "Padaria Lamim",
   "short_name": "Lamim",
   "description": "Encomende pães e bolos artesanais frescos da Padaria Lamim.",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#fefae0",
   "theme_color": "#6d574b",
