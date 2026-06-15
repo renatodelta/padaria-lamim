@@ -36,8 +36,8 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Interceptar apenas requisições GET
-  if (e.request.method !== 'GET') {
+  // Interceptar apenas requisições GET e esquemas http/https
+  if (e.request.method !== 'GET' || !e.request.url.startsWith('http')) {
     return;
   }
 
@@ -50,18 +50,38 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  // Evitar problemas com requisições only-if-cached que não sejam same-origin
+  if (e.request.cache === 'only-if-cached' && e.request.mode !== 'same-origin') {
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // stale-while-revalidate
+        // stale-while-revalidate: atualiza cache no background com clone do response
         fetch(e.request).then((networkResponse) => {
-          if (networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, networkResponse));
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
           }
         }).catch(() => {});
         return cachedResponse;
       }
-      return fetch(e.request);
+      
+      return fetch(e.request).then((networkResponse) => {
+        // Se a resposta for válida, cachear para o futuro
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
+        }
+        return networkResponse;
+      }).catch((err) => {
+        // Fallback em caso de falha de rede/offline
+        if (e.request.mode === 'navigate') {
+          return caches.match('./index.html') || caches.match('./');
+        }
+        throw err;
+      });
     })
   );
 });
