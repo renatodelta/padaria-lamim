@@ -498,11 +498,6 @@ h1, h2, h3, .font-serif {
     font-size: 0.8rem;
     color: var(--text-muted);
     line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    height: 2.8em;
 }
 
 .product-actions-row {
