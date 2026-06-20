@@ -1693,15 +1693,38 @@ document.addEventListener('DOMContentLoaded', () => {
         <td class="py-4 px-4 text-xs font-medium text-on-surface-variant">${paymentText}</td>
         <td class="py-4 px-4 text-right font-mono font-bold text-primary">R$ ${order.total.toFixed(2).replace('.', ',')}</td>
         <td class="py-4 px-4 text-right">
-          <button class="px-3 py-1.5 bg-surface-container border border-outline-variant/30 text-secondary hover:text-primary hover:border-secondary/40 rounded-lg text-xs font-bold transition-all btn-view-report-detail active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 ml-auto" data-id="${order.id}">
-            <span class="material-symbols-outlined text-[14px]">visibility</span>
-            <span>Detalhes</span>
-          </button>
+          <div class="flex items-center justify-end gap-2">
+            <button class="px-3 py-1.5 bg-surface-container border border-outline-variant/30 text-secondary hover:text-primary hover:border-secondary/40 rounded-lg text-xs font-bold transition-all btn-view-report-detail active:scale-95 cursor-pointer flex items-center justify-center gap-1.5" data-id="${order.id}">
+              <span class="material-symbols-outlined text-[14px]">visibility</span>
+              <span>Detalhes</span>
+            </button>
+            <button class="p-1.5 bg-surface hover:bg-error-container/20 border border-outline-variant/20 rounded-lg text-error hover:text-red-700 transition-all btn-delete-report-sale active:scale-95 cursor-pointer flex items-center justify-center" data-id="${order.id}" title="Excluir Venda">
+              <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+          </div>
         </td>
       `;
 
       tr.querySelector('.btn-view-report-detail').onclick = () => {
         openDrawer(order.id);
+      };
+
+      tr.querySelector('.btn-delete-report-sale').onclick = async () => {
+        if (confirm(`Deseja realmente excluir a venda do Pedido #${order.id} do relatório?`)) {
+          try {
+            const { error } = await supabaseClient
+              .from('pedidos')
+              .delete()
+              .eq('id', order.id);
+
+            if (error) throw error;
+            alert('Venda excluída com sucesso!');
+            await loadDashboardData();
+          } catch (err) {
+            console.error("Erro ao deletar venda do relatório:", err);
+            alert("Não foi possível excluir a venda.");
+          }
+        }
       };
 
       reportsTableBody.appendChild(tr);
