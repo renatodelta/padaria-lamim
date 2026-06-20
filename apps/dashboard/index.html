@@ -120,12 +120,20 @@
 <body class="bg-background text-on-background font-sans min-h-screen overflow-hidden">
   <div class="grain-texture"></div>
 
+  <!-- Sidebar Backdrop (Mobile) -->
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-25 hidden opacity-0 transition-opacity duration-300 lg:hidden"></div>
+
   <!-- Side Navigation Bar -->
-  <aside
-    class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/15 flex flex-col py-6 z-30 select-none">
-    <div class="px-6 mb-8">
-      <h1 class="font-serif text-2xl font-bold text-secondary italic leading-none">Padaria Lamim</h1>
-      <p class="text-[10px] tracking-[0.2em] uppercase opacity-70 font-semibold mt-1">Gestão de Pedidos</p>
+  <aside id="dashboard-sidebar"
+    class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/15 flex flex-col py-6 z-30 select-none transition-transform duration-300 -translate-x-full lg:translate-x-0">
+    <div class="px-6 mb-8 flex justify-between items-start">
+      <div>
+        <h1 class="font-serif text-2xl font-bold text-secondary italic leading-none">Padaria Lamim</h1>
+        <p class="text-[10px] tracking-[0.2em] uppercase opacity-70 font-semibold mt-1">Gestão de Pedidos</p>
+      </div>
+      <button id="btn-close-sidebar" class="lg:hidden p-1 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all flex items-center justify-center">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
 
     <nav class="flex-grow space-y-1">
@@ -172,37 +180,40 @@
 
   <!-- Top App Bar -->
   <header
-    class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-surface border-b border-outline-variant/15 shadow-sm flex justify-between items-center px-8 z-20">
-    <div class="flex items-center gap-8">
-      <h2 class="font-serif text-xl font-bold text-secondary">Atendimento</h2>
+    class="fixed top-0 right-0 w-full lg:w-[calc(100%-16rem)] h-16 bg-surface border-b border-outline-variant/15 shadow-sm flex justify-between items-center px-4 lg:px-8 z-20 transition-all duration-300">
+    <div class="flex items-center gap-2 lg:gap-8">
+      <button id="btn-open-sidebar" class="lg:hidden p-2 text-on-surface-variant hover:bg-surface-container-highest/30 rounded-full transition-all flex items-center justify-center mr-1">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <h2 class="font-serif text-lg lg:text-xl font-bold text-secondary">Atendimento</h2>
       <nav class="hidden lg:flex gap-6">
         <button class="text-secondary border-b-2 border-secondary pb-1 font-bold text-xs uppercase tracking-wider"
           id="btn-tab-today">Hoje</button>
       </nav>
     </div>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2 sm:gap-4">
       <div class="relative">
         <span class="absolute inset-y-0 left-3 flex items-center text-outline">
           <span class="material-symbols-outlined text-sm">search</span>
         </span>
         <input
-          class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-secondary/30 w-64 placeholder:text-outline/60 text-on-surface outline-none"
-          id="input-search-orders" placeholder="Buscar pedidos..." type="text" />
+          class="bg-surface-container-low border-none rounded-full pl-10 pr-3 sm:pr-4 py-2 text-sm focus:ring-1 focus:ring-secondary/30 w-28 xs:w-36 sm:w-48 md:w-64 placeholder:text-outline/60 text-on-surface outline-none transition-all"
+          id="input-search-orders" placeholder="Buscar..." type="text" />
       </div>
       <button
-        class="p-2 hover:bg-surface-container-highest/30 rounded-full transition-all text-on-surface-variant relative"
+        class="p-2 hover:bg-surface-container-highest/30 rounded-full transition-all text-on-surface-variant relative flex items-center justify-center"
         id="btn-refresh-dashboard">
         <span class="material-symbols-outlined">refresh</span>
       </button>
       <button
-        class="p-2 hover:bg-surface-container-highest/30 rounded-full transition-all text-on-surface-variant relative"
+        class="p-2 hover:bg-surface-container-highest/30 rounded-full transition-all text-on-surface-variant relative flex items-center justify-center"
         id="btn-toggle-sound" title="Alerta Sonoro (Ativado)">
         <span class="material-symbols-outlined">notifications_active</span>
       </button>
       <div
-        class="flex items-center gap-2 p-1 pl-3 border border-outline-variant/30 rounded-full hover:bg-surface-container-highest/20 transition-all select-none">
-        <span class="text-xs font-bold text-on-surface-variant">Balcão Lamim</span>
+        class="flex items-center gap-2 p-1 pl-1 sm:pl-3 border border-outline-variant/30 rounded-full hover:bg-surface-container-highest/20 transition-all select-none">
+        <span class="text-xs font-bold text-on-surface-variant hidden sm:inline">Balcão Lamim</span>
         <span class="material-symbols-outlined text-secondary"
           style="font-variation-settings: 'FILL' 1;">account_circle</span>
       </div>
@@ -210,61 +221,77 @@
   </header>
 
   <!-- Main Content Areas -->
-  <main class="ml-64 pt-24 pb-8 px-8 h-screen overflow-hidden flex flex-col">
+  <main class="ml-0 lg:ml-64 pt-20 lg:pt-24 pb-4 lg:pb-8 px-4 lg:px-8 h-screen overflow-hidden flex flex-col">
 
     <!-- View 1: Painel de Pedidos (Kanban) -->
     <div id="view-orders" class="flex-grow flex flex-col overflow-hidden h-full">
       <!-- Header Stats / KPIs -->
-      <div class="grid grid-cols-4 gap-4 mb-6 select-none">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-4 lg:mb-6 select-none">
         <div
-          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center">
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined">pending_actions</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="kpi-pending">0</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Novos Pedidos</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="kpi-pending">0</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Novos</span>
           </div>
         </div>
         <div
-          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center">
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined">oven</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="kpi-preparing">0</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Em Preparação</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="kpi-preparing">0</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Preparo</span>
           </div>
         </div>
         <div
-          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined">delivery_dining</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="kpi-ready">0</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Prontos</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="kpi-ready">0</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Prontos</span>
           </div>
         </div>
         <div
-          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center"
+          class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0"
             style="background-color: rgba(16,185,129,0.1); color: #10b981;">
             <span class="material-symbols-outlined">task_alt</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="kpi-delivered">0</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Concluídos</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="kpi-delivered">0</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Concluídos</span>
           </div>
         </div>
       </div>
 
+      <!-- Mobile Kanban Columns Tab Bar -->
+      <div class="flex lg:hidden bg-surface-container-low border border-outline-variant/15 rounded-xl p-1 mb-4 select-none" id="mobile-kanban-tabs">
+        <button data-column="pending" class="flex-grow py-2 text-center rounded-lg text-xs font-bold transition-all text-secondary bg-secondary-container/35">
+          Novos (<span id="mobile-badge-pending">0</span>)
+        </button>
+        <button data-column="preparing" class="flex-grow py-2 text-center rounded-lg text-xs font-bold transition-all text-on-surface-variant hover:text-secondary">
+          Preparo (<span id="mobile-badge-preparing">0</span>)
+        </button>
+        <button data-column="ready" class="flex-grow py-2 text-center rounded-lg text-xs font-bold transition-all text-on-surface-variant hover:text-secondary">
+          Prontos (<span id="mobile-badge-ready">0</span>)
+        </button>
+        <button data-column="delivery" class="flex-grow py-2 text-center rounded-lg text-xs font-bold transition-all text-on-surface-variant hover:text-secondary">
+          Entrega (<span id="mobile-badge-delivery">0</span>)
+        </button>
+      </div>
+
       <!-- Kanban Board Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 flex-grow h-[calc(100vh-14rem)] pb-4 overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6 flex-grow h-[calc(100vh-18rem)] lg:h-[calc(100vh-14rem)] pb-4 overflow-hidden">
 
         <!-- Column 1: Novos Pedidos -->
-        <div
-          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+        <div id="col-pending"
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full col-kanban">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
@@ -279,8 +306,8 @@
         </div>
 
         <!-- Column 2: Em Preparação -->
-        <div
-          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+        <div id="col-preparing"
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full col-kanban hidden lg:flex">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
@@ -295,8 +322,8 @@
         </div>
 
         <!-- Column 3: Prontos / Aguardando Motoboy -->
-        <div
-          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+        <div id="col-ready"
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full col-kanban hidden lg:flex">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
@@ -311,8 +338,8 @@
         </div>
 
         <!-- Column 4: Em Entrega -->
-        <div
-          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full">
+        <div id="col-delivery"
+          class="flex flex-col gap-4 bg-surface-container/30 border border-outline-variant/10 rounded-2xl p-4 overflow-hidden h-full col-kanban hidden lg:flex">
           <div class="flex items-center justify-between px-2">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-success"></span>
@@ -331,14 +358,13 @@
 
     <!-- View 2: Gerenciamento de Produtos -->
     <div id="view-products" class="hidden flex-grow flex flex-col overflow-hidden h-full">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h3 class="font-serif text-2xl font-bold text-secondary">Cadastro de Produtos</h3>
-          <p class="text-xs text-outline">Cadastre novos pães ou bolos e gerencie preços, descrições e fotos dos
-            existentes.</p>
+          <p class="text-xs text-outline">Cadastre novos pães ou bolos e gerencie preços, descrições e fotos dos existentes.</p>
         </div>
         <button id="btn-add-product"
-          class="bg-secondary hover:brightness-105 text-white font-bold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer">
+          class="bg-secondary hover:brightness-105 text-white font-bold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer w-full sm:w-auto justify-center">
           <span class="material-symbols-outlined">add</span>
           <span>Novo Produto</span>
         </button>
@@ -384,27 +410,24 @@
     <div id="view-motoboys" class="hidden flex-grow flex flex-col overflow-hidden h-full">
       <div class="mb-6">
         <h3 class="font-serif text-2xl font-bold text-secondary">Entregadores</h3>
-        <p class="text-xs text-outline">Cadastre e gerencie a lista de motoboys para despacho e acompanhamento de
-          entregas.</p>
+        <p class="text-xs text-outline">Cadastre e gerencie a lista de motoboys para despacho e acompanhamento de entregas.</p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-hidden pb-24">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow overflow-y-auto lg:overflow-hidden pb-24 lg:pb-8">
         <!-- Cadastro de Motoboy -->
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 h-fit">
+        <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-4 sm:p-6 h-fit">
           <h4 class="text-sm font-bold text-primary mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">person_add</span> Cadastrar Entregador
           </h4>
           <form id="form-motoboy" class="space-y-4" onsubmit="event.preventDefault();">
             <div class="flex flex-col gap-1.5">
-              <label for="input-motoboy-name" class="text-xs font-bold text-outline uppercase tracking-wider">Nome do
-                Entregador</label>
+              <label for="input-motoboy-name" class="text-xs font-bold text-outline uppercase tracking-wider">Nome do Entregador</label>
               <input type="text" id="input-motoboy-name" required
                 class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
                 placeholder="Ex: Roberto Silveira" />
             </div>
             <div class="flex flex-col gap-1.5">
-              <label for="input-motoboy-password" class="text-xs font-bold text-outline uppercase tracking-wider">Senha
-                de Acesso</label>
+              <label for="input-motoboy-password" class="text-xs font-bold text-outline uppercase tracking-wider">Senha de Acesso</label>
               <input type="password" id="input-motoboy-password" required minlength="4"
                 class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
                 placeholder="Mínimo 4 caracteres" />
@@ -419,7 +442,7 @@
 
         <!-- Lista de Motoboys -->
         <div
-          class="lg:col-span-2 bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6 flex flex-col overflow-hidden h-full">
+          class="lg:col-span-2 bg-surface-container-low border border-outline-variant/10 rounded-2xl p-4 sm:p-6 flex flex-col overflow-hidden h-auto lg:h-full">
           <h4 class="text-sm font-bold text-primary mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">delivery_dining</span> Entregadores Cadastrados
           </h4>
@@ -466,41 +489,41 @@
       </div>
 
       <!-- KPI Cards do Relatório -->
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 select-none">
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6 select-none">
+        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined">payments</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="rep-kpi-revenue">R$ 0,00</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Faturamento Total</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="rep-kpi-revenue">R$ 0,00</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Faturamento</span>
           </div>
         </div>
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center">
+        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined">shopping_cart</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="rep-kpi-orders">0</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Pedidos Entregues</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="rep-kpi-orders">0</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Entregues</span>
           </div>
         </div>
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center">
+        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined">toll</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="rep-kpi-delivery">R$ 0,00</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Taxas de Entrega</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="rep-kpi-delivery">R$ 0,00</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Taxas</span>
           </div>
         </div>
-        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-xs">
-          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+        <div class="bg-surface-container-low border border-outline-variant/10 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xs">
+          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined">analytics</span>
           </div>
           <div>
-            <span class="block text-xl font-bold font-serif text-primary" id="rep-kpi-average">R$ 0,00</span>
-            <span class="block text-[10px] text-outline uppercase tracking-wider font-semibold">Ticket Médio</span>
+            <span class="block text-lg sm:text-xl font-bold font-serif text-primary" id="rep-kpi-average">R$ 0,00</span>
+            <span class="block text-[9px] sm:text-[10px] text-outline uppercase tracking-wider font-semibold">Ticket Médio</span>
           </div>
         </div>
       </div>

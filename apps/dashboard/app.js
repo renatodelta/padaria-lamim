@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedOrder = null;
   let searchQuery = '';
   let activeView = 'orders'; // 'orders', 'products', 'stock', 'motoboys'
+  let activeMobileColumn = 'pending'; // 'pending', 'preparing', 'ready', 'delivery'
   let soundEnabled = localStorage.getItem('dashboard_sound_alerts') !== 'disabled';
   let soundInterval = null;
 
@@ -341,6 +342,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (badgeDelivery) {
       badgeDelivery.textContent = deliveryCount;
     }
+
+    // Mobile Badges
+    const mobileBadgePending = document.getElementById('mobile-badge-pending');
+    const mobileBadgePreparing = document.getElementById('mobile-badge-preparing');
+    const mobileBadgeReady = document.getElementById('mobile-badge-ready');
+    const mobileBadgeDelivery = document.getElementById('mobile-badge-delivery');
+    
+    if (mobileBadgePending) mobileBadgePending.textContent = pendingCount;
+    if (mobileBadgePreparing) mobileBadgePreparing.textContent = preparingCount;
+    if (mobileBadgeReady) mobileBadgeReady.textContent = readyCount;
+    if (mobileBadgeDelivery) mobileBadgeDelivery.textContent = deliveryCount;
   }
 
   function renderKanban() {
@@ -573,6 +585,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
     });
+
+    updateMobileKanbanColumnsUI();
   }
 
   // --- STAGE ADVANCE LOGIC ---
@@ -840,8 +854,84 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- MOBILE SIDEBAR DRAWER & KANBAN COLUMN SWITCHER LOGIC ---
+  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+  const dashboardSidebar = document.getElementById('dashboard-sidebar');
+  const btnOpenSidebar = document.getElementById('btn-open-sidebar');
+  const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+
+  function openSidebar() {
+    if (dashboardSidebar && sidebarBackdrop) {
+      dashboardSidebar.classList.remove('-translate-x-full');
+      sidebarBackdrop.classList.remove('hidden');
+      setTimeout(() => {
+        sidebarBackdrop.classList.remove('opacity-0');
+      }, 10);
+    }
+  }
+
+  function closeSidebar() {
+    if (dashboardSidebar && sidebarBackdrop) {
+      dashboardSidebar.classList.add('-translate-x-full');
+      sidebarBackdrop.classList.add('opacity-0');
+      setTimeout(() => {
+        sidebarBackdrop.classList.add('hidden');
+      }, 300);
+    }
+  }
+
+  if (btnOpenSidebar) btnOpenSidebar.onclick = openSidebar;
+  if (btnCloseSidebar) btnCloseSidebar.onclick = closeSidebar;
+  if (sidebarBackdrop) sidebarBackdrop.onclick = closeSidebar;
+
+  function updateMobileKanbanColumnsUI() {
+    const columns = {
+      pending: document.getElementById('col-pending'),
+      preparing: document.getElementById('col-preparing'),
+      ready: document.getElementById('col-ready'),
+      delivery: document.getElementById('col-delivery')
+    };
+
+    Object.keys(columns).forEach(colName => {
+      const colEl = columns[colName];
+      if (!colEl) return;
+      if (colName === activeMobileColumn) {
+        colEl.classList.remove('hidden');
+        colEl.classList.add('flex');
+      } else {
+        colEl.classList.add('hidden');
+        colEl.classList.remove('flex');
+      }
+    });
+
+    // Update tab buttons styling
+    const tabContainer = document.getElementById('mobile-kanban-tabs');
+    if (tabContainer) {
+      const buttons = tabContainer.querySelectorAll('button');
+      buttons.forEach(btn => {
+        const colName = btn.getAttribute('data-column');
+        if (colName === activeMobileColumn) {
+          btn.className = "flex-grow py-2 text-center rounded-lg text-xs font-bold transition-all text-secondary bg-secondary-container/35";
+        } else {
+          btn.className = "flex-grow py-2 text-center rounded-lg text-xs font-bold transition-all text-on-surface-variant hover:text-secondary";
+        }
+      });
+    }
+  }
+
+  const mobileKanbanTabs = document.getElementById('mobile-kanban-tabs');
+  if (mobileKanbanTabs) {
+    mobileKanbanTabs.querySelectorAll('button').forEach(btn => {
+      btn.onclick = () => {
+        activeMobileColumn = btn.getAttribute('data-column');
+        updateMobileKanbanColumnsUI();
+      };
+    });
+  }
+
   // --- VIEW SWITCHING LOGIC ---
   function switchView(viewId) {
+    closeSidebar();
     activeView = viewId;
 
     viewOrders.classList.add('hidden');
