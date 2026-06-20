@@ -498,6 +498,7 @@ h1, h2, h3, .font-serif {
     font-size: 0.8rem;
     color: var(--text-muted);
     line-height: 1.4;
+    text-align: justify;
 }
 
 .product-actions-row {
