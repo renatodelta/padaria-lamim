@@ -604,6 +604,8 @@ document.addEventListener('DOMContentLoaded', () => {
       activeMobileColumn = 'ready';
     }
 
+    updateMobileKanbanColumnsUI();
+
     try {
       const { error } = await supabaseClient
         .from('pedidos')
@@ -844,6 +846,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               if (error) throw error;
               activeMobileColumn = 'delivery';
+              updateMobileKanbanColumnsUI();
               await loadDashboardData();
               closeDrawer();
               alert(`Pedido #${selectedOrder.id} enviado para o motoboy ${driver}!`);
