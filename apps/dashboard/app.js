@@ -598,8 +598,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let nextStatus = order.status;
     if (order.status === 'pendente') {
       nextStatus = 'preparando';
+      activeMobileColumn = 'preparing';
     } else if (order.status === 'preparando') {
       nextStatus = 'pronto';
+      activeMobileColumn = 'ready';
     }
 
     try {
@@ -841,6 +843,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .eq('id', selectedOrder.id);
 
               if (error) throw error;
+              activeMobileColumn = 'delivery';
               await loadDashboardData();
               closeDrawer();
               alert(`Pedido #${selectedOrder.id} enviado para o motoboy ${driver}!`);
@@ -1945,4 +1948,13 @@ document.addEventListener('DOMContentLoaded', () => {
       loadDashboardData();
     });
   });
+
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => console.log('Service Worker registered for Dashboard PWA!', reg))
+        .catch((err) => console.warn('Service Worker registration failed:', err));
+    });
+  }
 });
