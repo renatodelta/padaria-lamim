@@ -1646,6 +1646,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- WEB PUSH SUBSCRIPTION ---
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
+  async function subscribeUserToPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.warn('Push messaging is not supported in this browser.');
+      return;
+    }
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        console.warn('User denied notification permissions.');
+        return;
+      }
+
+      // Default VAPID Public Key
+      const VAPID_PUBLIC_KEY = 'BEl62iUZGZaAOYpUA3RlGoFmCl64S2w1QdC2NthD1Kz-78JbpxzG6Kj7-4-v2-7p-x4_uXW56P5Y4uUo-Nl4Jg';
+      const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+
+      const subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+      });
+
+      console.log('User is subscribed to Push:', JSON.stringify(subscription));
+
+      const { error } = await supabaseClient
+        .from('push_subscriptions')
+        .upsert({
+          subscription: subscription
+        }, { onConflict: 'subscription' });
+
+      if (error) {
+        if (error.code === 'PGRST116' || error.message.includes('relation "push_subscriptions" does not exist')) {
+          console.warn('Table push_subscriptions not found in Supabase. Stored subscription locally in localStorage.');
+          localStorage.setItem('push_subscription_backup', JSON.stringify(subscription));
+        } else {
+          throw error;
+        }
+      } else {
+        console.log('Push subscription saved to Supabase successfully!');
+      }
+
+    } catch (err) {
+      console.error('Failed to subscribe user to push notifications:', err);
+    }
+  }
+
   if (btnToggleSound) {
     updateSoundButtonUI();
     btnToggleSound.onclick = () => {
@@ -1654,6 +1718,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateSoundButtonUI();
       if (soundEnabled) {
         playNewOrderSound();
+        subscribeUserToPush();
       } else {
         stopNewOrderAlert();
       }
@@ -1957,7 +2022,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- INITIAL LOAD ---
   loadProductsData().then(() => {
     loadMotoboysData().then(() => {
-      loadDashboardData();
+      loadDashboardData().then(() => {
+        if (soundEnabled) {
+          subscribeUserToPush();
+        }
+      });
     });
   });
 

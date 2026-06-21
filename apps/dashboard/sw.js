@@ -89,3 +89,55 @@ self.addEventListener('fetch', (e) => {
     })
   );
 });
+
+// --- WEB PUSH NOTIFICATIONS ---
+self.addEventListener('push', (event) => {
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { title: 'Novo Pedido!', body: event.data.text() };
+    }
+  }
+
+  const title = data.title || 'Novo Pedido Recebido!';
+  const options = {
+    body: data.body || 'Toque para gerenciar o novo pedido da Padaria Lamim.',
+    icon: 'icon-192.png',
+    badge: 'icon-192.png',
+    vibrate: [300, 100, 300, 100, 300],
+    data: {
+      url: data.url || './index.html'
+    },
+    actions: [
+      { action: 'open', title: 'Abrir Painel' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  let targetUrl = './index.html';
+  if (event.notification.data && event.notification.data.url) {
+    targetUrl = event.notification.data.url;
+  }
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes('dashboard') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
