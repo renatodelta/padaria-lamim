@@ -617,6 +617,36 @@
               </div>
             </div>
 
+            <h4 class="text-sm font-bold text-primary border-b border-outline-variant/10 pb-2 flex items-center gap-2">
+              <span class="material-symbols-outlined text-lg">volume_up</span> Alertas Sonoros do Painel
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="select-settings-chime" class="text-xs font-bold text-outline uppercase tracking-wider">Timbre do Alerta</label>
+                <select id="select-settings-chime" class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface">
+                  <option value="bell">Campainha Clássica ("Ting!")</option>
+                  <option value="beep">Bip Digital ("Beep-Beep")</option>
+                  <option value="chime">Sino Melódico ("Chime")</option>
+                  <option value="siren">🚨 Sirene Urgente (Alerta Alto)</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label for="select-settings-volume" class="text-xs font-bold text-outline uppercase tracking-wider">Volume do Alerta</label>
+                <select id="select-settings-volume" class="bg-surface-container border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface">
+                  <option value="0.25">Baixo (25%)</option>
+                  <option value="0.5">Médio (50%)</option>
+                  <option value="0.8">Alto (80%)</option>
+                  <option value="1.0">🚨 Máximo (100% - Alerta Alto)</option>
+                </select>
+              </div>
+              <div class="flex flex-col justify-end">
+                <button type="button" id="btn-test-chime" class="bg-surface-container border border-outline-variant hover:bg-surface-container-high text-primary font-bold py-3 px-4 rounded-xl text-sm transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">volume_up</span>
+                  Testar Som
+                </button>
+              </div>
+            </div>
+
             <div class="pt-4 flex justify-end">
               <button id="btn-save-settings" type="submit"
                 class="bg-secondary hover:brightness-105 text-on-primary font-bold py-3 px-6 rounded-xl transition-all active:scale-95 flex items-center gap-2 cursor-pointer">

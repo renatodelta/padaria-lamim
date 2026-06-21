@@ -1482,169 +1482,149 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => icon.classList.remove('animate-spin'), 600);
   };
 
-  btnCloseDrawer.onclick = closeDrawer;
-  drawerOverlay.onclick = closeDrawer;
+   // --- SOUND ALERTS (WEB AUDIO SYNTHESIZER WITH MULTIPLE TIMBRES) ---
+  let audioCtx = null;
+  let activeChimeType = localStorage.getItem('dashboard_chime_type') || 'bell';
+  let activeVolume = parseFloat(localStorage.getItem('dashboard_chime_volume') || '0.8');
 
-  // --- SOUND ALERTS (HTML5 AUDIO & OFFLINE AUDIO SYNTHESIS) ---
-  let notificationAudio = null;
-
-  function bufferToWav(buffer) {
-    const numOfChan = buffer.numberOfChannels;
-    const length = buffer.length * 2 + 44;
-    const bufferArr = new ArrayBuffer(length);
-    const view = new DataView(bufferArr);
-    const channels = [];
-    let i;
-    let sample;
-    let pos = 0;
-    let offset = 0;
-
-    const setUint16 = (data) => {
-      view.setUint16(pos, data, true);
-      pos += 2;
-    };
-
-    const setUint32 = (data) => {
-      view.setUint32(pos, data, true);
-      pos += 4;
-    };
-
-    // Write WAV header
-    setUint32(0x46464952); // "RIFF"
-    setUint32(length - 8); // file length - 8
-    setUint32(0x45564157); // "WAVE"
-    setUint32(0x20746d66); // "fmt " chunk
-    setUint32(16);         // chunk length
-    setUint16(1);          // sample format (raw)
-    setUint16(numOfChan);  // channel count
-    setUint32(buffer.sampleRate); // sample rate
-    setUint32(buffer.sampleRate * 2 * numOfChan); // byte rate
-    setUint16(numOfChan * 2); // block align
-    setUint16(16);         // bits per sample
-    setUint32(0x61746164); // "data" chunk
-    setUint32(length - pos - 4); // chunk length
-
-    for (i = 0; i < buffer.numberOfChannels; i++) {
-      channels.push(buffer.getChannelData(i));
-    }
-
-    while (pos < length) {
-      for (i = 0; i < numOfChan; i++) {
-        sample = Math.max(-1, Math.min(1, channels[i][offset]));
-        sample = (sample < 0 ? sample * 0x8000 : sample * 0x7FFF);
-        view.setInt16(pos, sample, true);
-        pos += 2;
-      }
-      offset++;
-    }
-
-    return new Blob([bufferArr], { type: 'audio/wav' });
-  }
-
-  async function initNotificationAudio() {
-    try {
-      const sampleRate = 44100;
-      const duration = 1.5;
-      const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, sampleRate * duration, sampleRate);
-      
-      const now = 0;
-      // High-pitched metallic desk counter bell ("Ting!")
-      const freqs = [1500, 2200, 3000, 3700];
-      const gains = [0.15, 0.08, 0.05, 0.03];
-      
-      freqs.forEach((freq, index) => {
-        const osc = offlineCtx.createOscillator();
-        const gainNode = offlineCtx.createGain();
-        
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now);
-        
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(gains[index], now + 0.002);
-        gainNode.gain.exponentialRampToValueAtTime(gains[index] * 0.1, now + 0.08);
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
-        
-        osc.connect(gainNode);
-        gainNode.connect(offlineCtx.destination);
-        
-        osc.start(now);
-        osc.stop(now + 1.3);
-      });
-      
-      const renderedBuffer = await offlineCtx.startRendering();
-      const wavBlob = bufferToWav(renderedBuffer);
-      const audioUrl = URL.createObjectURL(wavBlob);
-      notificationAudio = new Audio(audioUrl);
-      notificationAudio.volume = 0.6;
-    } catch (e) {
-      console.warn("Failed to initialize offline audio chime:", e);
-    }
-  }
-
-  // Bless HTML5 Audio element on first user gesture to bypass autoplay block
-  // Bless HTML5 Audio element on first user gesture to bypass autoplay block (using capture phase to bypass stopPropagation)
+  // Lazy initialize AudioContext on user interaction or playback
   const blessAudio = () => {
-    if (notificationAudio) {
-      notificationAudio.play().then(() => {
-        notificationAudio.pause();
-        notificationAudio.currentTime = 0;
-        console.log("Notification audio element blessed and unlocked!");
-        // Remove listeners once successfully blessed
-        document.removeEventListener('click', blessAudio, { capture: true });
-        document.removeEventListener('keydown', blessAudio, { capture: true });
-        document.removeEventListener('touchstart', blessAudio, { capture: true });
-      }).catch(e => {
-        console.warn("Could not bless audio yet:", e);
-      });
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
     }
   };
   document.addEventListener('click', blessAudio, { capture: true });
   document.addEventListener('keydown', blessAudio, { capture: true });
   document.addEventListener('touchstart', blessAudio, { capture: true });
 
+  function playChime(type = 'bell', volume = 0.8) {
+    if (!soundEnabled) return;
+    
+    blessAudio();
+    if (!audioCtx) return;
+    
+    const ctx = audioCtx;
+    const mainGain = ctx.createGain();
+    mainGain.gain.setValueAtTime(0, ctx.currentTime);
+    mainGain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.01);
+    mainGain.connect(ctx.destination);
+    
+    const now = ctx.currentTime;
+    
+    if (type === 'bell') {
+      // Classic metallic desk bell ("Ting!")
+      const freqs = [1500, 2200, 3000, 3700];
+      const gains = [0.15, 0.08, 0.05, 0.03];
+      
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.frequency.value = freq;
+        gainNode.gain.setValueAtTime(gains[idx], now);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+        osc.connect(gainNode);
+        gainNode.connect(mainGain);
+        osc.start(now);
+        osc.stop(now + 1.3);
+      });
+      mainGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+    } 
+    else if (type === 'beep') {
+      // Digital double beep
+      const playBeep = (startTime) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(880, startTime);
+        gainNode.gain.setValueAtTime(0.15, startTime);
+        gainNode.gain.setValueAtTime(0.15, startTime + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.12);
+        osc.connect(gainNode);
+        gainNode.connect(mainGain);
+        osc.start(startTime);
+        osc.stop(startTime + 0.15);
+      };
+      
+      playBeep(now);
+      playBeep(now + 0.2);
+      mainGain.gain.setValueAtTime(volume, now);
+      mainGain.gain.setValueAtTime(volume, now + 0.35);
+      mainGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+    } 
+    else if (type === 'chime') {
+      // Soft resonant chime arpeggio
+      const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.setValueAtTime(0.15, now + idx * 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.1 + 0.8);
+        osc.connect(gainNode);
+        gainNode.connect(mainGain);
+        osc.start(now + idx * 0.1);
+        osc.stop(now + idx * 0.1 + 0.9);
+      });
+      mainGain.gain.setValueAtTime(volume, now);
+      mainGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
+    } 
+    else if (type === 'siren') {
+      // Urgent siren (Loud alert)
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.linearRampToValueAtTime(1000, now + 0.25);
+      osc.frequency.linearRampToValueAtTime(600, now + 0.5);
+      osc.frequency.linearRampToValueAtTime(1000, now + 0.75);
+      osc.frequency.linearRampToValueAtTime(600, now + 1.0);
+      
+      const gainNode = ctx.createGain();
+      gainNode.gain.setValueAtTime(0.12, now);
+      gainNode.gain.linearRampToValueAtTime(0.12, now + 0.9);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 1.0);
+      
+      osc.connect(gainNode);
+      gainNode.connect(mainGain);
+      
+      osc.start(now);
+      osc.stop(now + 1.0);
+      
+      mainGain.gain.setValueAtTime(volume, now);
+      mainGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.0);
+    }
+  }
+
   function playNewOrderSound() {
-    if (!soundEnabled || !notificationAudio) return;
+    if (!soundEnabled) return;
     
     stopNewOrderAlert();
     
     let ringCount = 0;
-    const maxRings = 10; // 10 rings spaced by 3 seconds = 30 seconds
+    const maxRings = 15;
     
     const ring = () => {
-      if (!soundEnabled || ringCount >= maxRings || !notificationAudio) {
+      if (!soundEnabled || ringCount >= maxRings) {
         stopNewOrderAlert();
         return;
       }
       
-      try {
-        notificationAudio.currentTime = 0;
-        notificationAudio.play().catch(e => {
-          console.warn("Playback prevented:", e);
-        });
-      } catch (e) {
-        console.warn("Audio play error:", e);
-      }
-      
+      playChime(activeChimeType, activeVolume);
       ringCount++;
     };
     
-    // Play immediately
     ring();
-    
-    // Repeat every 3 seconds
-    soundInterval = setInterval(ring, 3000);
+    soundInterval = setInterval(ring, activeChimeType === 'siren' ? 1500 : 3000);
   }
 
   function stopNewOrderAlert() {
     if (soundInterval) {
       clearInterval(soundInterval);
       soundInterval = null;
-    }
-    if (notificationAudio) {
-      try {
-        notificationAudio.pause();
-        notificationAudio.currentTime = 0;
-      } catch (e) {}
     }
   }
 
@@ -1881,6 +1861,11 @@ document.addEventListener('DOMContentLoaded', () => {
       inputSettingsDeliveryFee.value = config['delivery_fee'] || localStorage.getItem('config_delivery_fee') || '4.00';
       inputSettingsMaxItems.value = config['max_items_order'] || localStorage.getItem('config_max_items_order') || '10';
 
+      const selectSettingsChime = document.getElementById('select-settings-chime');
+      const selectSettingsVolume = document.getElementById('select-settings-volume');
+      if (selectSettingsChime) selectSettingsChime.value = localStorage.getItem('dashboard_chime_type') || 'bell';
+      if (selectSettingsVolume) selectSettingsVolume.value = localStorage.getItem('dashboard_chime_volume') || '0.8';
+
     } catch (err) {
       console.warn("Erro ao buscar configurações do Supabase. Carregando dados locais.", err);
       // Fallback local
@@ -1890,7 +1875,24 @@ document.addEventListener('DOMContentLoaded', () => {
       inputSettingsClosing.value = localStorage.getItem('config_closing_time') || '20:00';
       inputSettingsDeliveryFee.value = localStorage.getItem('config_delivery_fee') || '4.00';
       inputSettingsMaxItems.value = localStorage.getItem('config_max_items_order') || '10';
+      
+      const selectSettingsChime = document.getElementById('select-settings-chime');
+      const selectSettingsVolume = document.getElementById('select-settings-volume');
+      if (selectSettingsChime) selectSettingsChime.value = localStorage.getItem('dashboard_chime_type') || 'bell';
+      if (selectSettingsVolume) selectSettingsVolume.value = localStorage.getItem('dashboard_chime_volume') || '0.8';
     }
+  }
+
+  // Bind sound test button
+  const selectSettingsChime = document.getElementById('select-settings-chime');
+  const selectSettingsVolume = document.getElementById('select-settings-volume');
+  const btnTestChime = document.getElementById('btn-test-chime');
+  if (btnTestChime) {
+    btnTestChime.onclick = () => {
+      if (selectSettingsChime && selectSettingsVolume) {
+        playChime(selectSettingsChime.value, parseFloat(selectSettingsVolume.value));
+      }
+    };
   }
 
   if (formSettings) {
@@ -1902,6 +1904,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (btnText) btnText.textContent = "Salvando...";
       if (btnIcon) btnIcon.textContent = "sync";
+
+      // Salvar configurações de som localmente
+      if (selectSettingsChime && selectSettingsVolume) {
+        localStorage.setItem('dashboard_chime_type', selectSettingsChime.value);
+        localStorage.setItem('dashboard_chime_volume', selectSettingsVolume.value);
+        activeChimeType = selectSettingsChime.value;
+        activeVolume = parseFloat(selectSettingsVolume.value);
+      }
 
       const payload = [
         { chave: 'whatsapp_phone', valor: inputSettingsWhatsapp.value.trim() },
@@ -1945,7 +1955,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .subscribe();
 
   // --- INITIAL LOAD ---
-  initNotificationAudio();
   loadProductsData().then(() => {
     loadMotoboysData().then(() => {
       loadDashboardData();
