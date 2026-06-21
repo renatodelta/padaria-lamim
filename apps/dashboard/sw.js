@@ -1,4 +1,4 @@
-const CACHE_NAME = 'padaria-lamim-dashboard-cache-v1';
+const CACHE_NAME = 'padaria-lamim-dashboard-cache-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -14,53 +14,66 @@ self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      // Usar Promise.allSettled para garantir que a instalação não falhe se um único asset falhar ao carregar.
+      return Promise.allSettled(
+        ASSETS.map(asset => {
+          return cache.add(asset).catch(err => {
+            console.warn(`Falha ao cachear asset: ${asset}`, err);
+          });
+        })
+      );
     })
   );
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    Promise.all([
-      self.clients.claim(),
-      caches.keys().then((keys) => {
-        return Promise.all(
-          keys.map((key) => {
-            if (key !== CACHE_NAME) {
-              return caches.delete(key);
-            }
-          })
-        );
-      })
-    ])
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') {
-    return;
-  }
-
+  if (e.request.method !== 'GET') return;
+  
   const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
 
-  if (url.origin !== self.location.origin) {
+  // Para navegações, responder com rede-primeiro e fallback para cache
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
+        }
+        return networkResponse;
+      }).catch(() => {
+        return caches.match('./index.html').then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          return caches.match('./').then((cachedResponseDir) => {
+            if (cachedResponseDir) return cachedResponseDir;
+            return new Response(
+              "Sem conexão com a internet.",
+              { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+            );
+          });
+        });
+      })
+    );
     return;
   }
 
-  const isNavigation = e.request.mode === 'navigate';
-  const isAsset = ASSETS.some(asset => {
-    const assetPath = asset.startsWith('.') ? asset.slice(1) : asset;
-    return url.pathname === assetPath || 
-           (url.pathname === '/' && assetPath === '/index.html') || 
-           url.pathname.endsWith(assetPath);
-  });
-
-  if (!isNavigation && !isAsset) {
-    return;
-  }
-
+  // Para outros recursos estáticos, usar stale-while-revalidate
   e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((cachedResponse) => {
+    caches.match(e.request).then((cachedResponse) => {
       const fetchPromise = fetch(e.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
@@ -69,23 +82,6 @@ self.addEventListener('fetch', (e) => {
         return networkResponse;
       }).catch((err) => {
         if (cachedResponse) return cachedResponse;
-        
-        if (isNavigation) {
-          return caches.match('./index.html', { ignoreSearch: true }).then((res) => {
-            if (res) return res;
-            return caches.match('./', { ignoreSearch: true }).then((resDir) => {
-              if (resDir) return resDir;
-              return new Response(
-                "<!DOCTYPE html><html lang='pt-BR'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Offline</title><style>body{font-family:sans-serif;text-align:center;padding:50px;background:#fefae0;color:#1d1c0d}h1{color:#6d574b}p{color:#4f4540}</style></head><body><h1>Sem Conexão</h1><p>Conecte-se à internet para carregar o aplicativo.</p></body></html>",
-                {
-                  status: 503,
-                  statusText: "Service Unavailable",
-                  headers: new Headers({ 'Content-Type': 'text/html; charset=utf-8' })
-                }
-              );
-            });
-          });
-        }
         throw err;
       });
 

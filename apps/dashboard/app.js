@@ -1963,10 +1963,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Register Service Worker for PWA
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then((reg) => console.log('Service Worker registered for Dashboard PWA!', reg))
-        .catch((err) => console.warn('Service Worker registration failed:', err));
-    });
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => console.log('Service Worker registered for Dashboard PWA!', reg))
+      .catch((err) => console.warn('Service Worker registration failed:', err));
   }
 });
