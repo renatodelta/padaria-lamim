@@ -1182,6 +1182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let barIconName = 'sync';
 
     // Steps descriptions
+    const step0Title = document.querySelector('#step-0 .step-title');
     const step0Desc = document.getElementById('step-0-desc');
     const step1Desc = document.getElementById('step-1-desc');
     const step2Title = document.getElementById('step-2-title');
@@ -1200,17 +1201,19 @@ document.addEventListener('DOMContentLoaded', () => {
     switch (status) {
       case 'pendente':
         activeStepIndex = 0;
-        barStatusText = 'Aceito • Na fila de produção';
-        barIconName = 'thumb_up';
-        if (step0Desc) step0Desc.textContent = 'Seu pedido foi recebido e aceito pela padaria.';
+        barStatusText = 'Aguardando o pedido ser aceito';
+        barIconName = 'sync';
+        if (step0Title) step0Title.textContent = 'Aguardando Aceite';
+        if (step0Desc) step0Desc.textContent = 'Seu pedido foi recebido e está aguardando a padaria aceitar.';
         if (step1Desc) step1Desc.textContent = 'Aguardando início do preparo.';
         if (step2Desc) step2Desc.textContent = isDelivery ? 'Aguardando despacho.' : 'Aguardando produção.';
         break;
       case 'preparando':
         activeStepIndex = 1;
-        barStatusText = 'Em preparo';
+        barStatusText = 'Pedido Aceito • Em preparo';
         barIconName = 'oven';
-        if (step0Desc) step0Desc.textContent = 'Pedido confirmado e aceito.';
+        if (step0Title) step0Title.textContent = 'Pedido Aceito';
+        if (step0Desc) step0Desc.textContent = 'Seu pedido foi confirmado e aceito pela padaria.';
         if (step1Desc) step1Desc.textContent = 'Seu bolo está sendo preparado com carinho.';
         if (step2Desc) step2Desc.textContent = isDelivery ? 'Aguardando despacho.' : 'Aguardando ficar pronto.';
         break;
