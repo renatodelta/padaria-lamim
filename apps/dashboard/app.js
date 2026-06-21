@@ -1484,8 +1484,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
    // --- SOUND ALERTS (WEB AUDIO SYNTHESIZER WITH MULTIPLE TIMBRES) ---
   let audioCtx = null;
-  let activeChimeType = localStorage.getItem('dashboard_chime_type') || 'bell';
-  let activeVolume = parseFloat(localStorage.getItem('dashboard_chime_volume') || '0.8');
+  let activeChimeType = localStorage.getItem('dashboard_chime_type') || 'siren';
+  let activeVolume = parseFloat(localStorage.getItem('dashboard_chime_volume') || '1.0');
 
   // Lazy initialize AudioContext on user interaction or playback
   const blessAudio = () => {
@@ -1928,8 +1928,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const selectSettingsChime = document.getElementById('select-settings-chime');
       const selectSettingsVolume = document.getElementById('select-settings-volume');
-      if (selectSettingsChime) selectSettingsChime.value = localStorage.getItem('dashboard_chime_type') || 'bell';
-      if (selectSettingsVolume) selectSettingsVolume.value = localStorage.getItem('dashboard_chime_volume') || '0.8';
+      if (selectSettingsChime) selectSettingsChime.value = localStorage.getItem('dashboard_chime_type') || 'siren';
+      if (selectSettingsVolume) selectSettingsVolume.value = localStorage.getItem('dashboard_chime_volume') || '1.0';
 
     } catch (err) {
       console.warn("Erro ao buscar configurações do Supabase. Carregando dados locais.", err);
@@ -1943,8 +1943,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const selectSettingsChime = document.getElementById('select-settings-chime');
       const selectSettingsVolume = document.getElementById('select-settings-volume');
-      if (selectSettingsChime) selectSettingsChime.value = localStorage.getItem('dashboard_chime_type') || 'bell';
-      if (selectSettingsVolume) selectSettingsVolume.value = localStorage.getItem('dashboard_chime_volume') || '0.8';
+      if (selectSettingsChime) selectSettingsChime.value = localStorage.getItem('dashboard_chime_type') || 'siren';
+      if (selectSettingsVolume) selectSettingsVolume.value = localStorage.getItem('dashboard_chime_volume') || '1.0';
     }
   }
 
