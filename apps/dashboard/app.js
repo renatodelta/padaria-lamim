@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let sirenOscillator = null;
   let sirenLFO = null;
   let sirenGain = null;
+  let newOrderAudio = new Audio('Brasil.m4a');
 
   // --- UI ELEMENTS ---
   const listPending = document.getElementById('list-pending');
@@ -1507,6 +1508,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!soundEnabled) return;
     
     blessAudio();
+    
+    if (type === 'siren') {
+      const tempAudio = new Audio('Brasil.m4a');
+      tempAudio.volume = volume;
+      tempAudio.play().catch(err => console.error("Error playing test Brasil.m4a:", err));
+      return;
+    }
+    
     if (!audioCtx) return;
     
     const ctx = audioCtx;
@@ -1654,7 +1663,11 @@ document.addEventListener('DOMContentLoaded', () => {
     stopNewOrderAlert();
     
     if (activeChimeType === 'siren') {
-      startContinuousSiren(activeVolume);
+      blessAudio();
+      newOrderAudio.currentTime = 0;
+      newOrderAudio.loop = true;
+      newOrderAudio.volume = activeVolume;
+      newOrderAudio.play().catch(err => console.error("Error playing Brasil.m4a alert:", err));
     } else {
       let ringCount = 0;
       const maxRings = 15;
@@ -1680,6 +1693,12 @@ document.addEventListener('DOMContentLoaded', () => {
       soundInterval = null;
     }
     stopContinuousSiren();
+    if (newOrderAudio) {
+      try {
+        newOrderAudio.pause();
+        newOrderAudio.currentTime = 0;
+      } catch (e) {}
+    }
   }
 
   function updateSoundButtonUI() {

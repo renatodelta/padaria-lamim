@@ -1,13 +1,14 @@
-const CACHE_NAME = 'padaria-lamim-dashboard-cache-v5';
+const CACHE_NAME = 'padaria-lamim-dashboard-cache-v6';
 const ASSETS = [
-  './',
-  './index.html',
-  './app.js',
-  './supabase-config.js',
-  './favicon.ico',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+   './',
+   './index.html',
+   './app.js',
+   './supabase-config.js',
+   './favicon.ico',
+   './manifest.json',
+   './icon-192.png',
+   './icon-512.png',
+   './Brasil.m4a'
 ];
 
 self.addEventListener('install', (e) => {
