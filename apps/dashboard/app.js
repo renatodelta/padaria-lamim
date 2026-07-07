@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formProductPrice = document.getElementById('form-product-price');
   const formProductImage = document.getElementById('form-product-image');
   const formProductDesc = document.getElementById('form-product-desc');
+  const googlePhotosWarning = document.getElementById('google-photos-warning');
 
   const btnAddProduct = document.getElementById('btn-add-product');
   const btnCloseProductModal = document.getElementById('btn-close-product-modal');
@@ -1226,6 +1227,15 @@ document.addEventListener('DOMContentLoaded', () => {
       modalProductTitle.textContent = "Novo Produto";
     }
 
+    if (googlePhotosWarning) {
+      const imageVal = formProductImage.value.trim();
+      if (imageVal.includes('photos.app.goo.gl') || imageVal.includes('photos.google.com')) {
+        googlePhotosWarning.classList.remove('hidden');
+      } else {
+        googlePhotosWarning.classList.add('hidden');
+      }
+    }
+
     modalProduct.classList.remove('hidden');
     setTimeout(() => {
       modalProduct.classList.remove('opacity-0');
@@ -1250,6 +1260,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const image = formProductImage.value.trim();
     const desc = formProductDesc.value.trim();
     const idVal = formProductId.value;
+
+    if (image.includes('photos.app.goo.gl') || image.includes('photos.google.com')) {
+      alert("Erro: Links de compartilhamento do Google Fotos não são suportados diretamente. Use uma hospedagem como o ImgBB, Postimages ou salve a imagem na pasta do site.");
+      return;
+    }
 
     try {
       if (idVal) {
@@ -1320,6 +1335,17 @@ document.addEventListener('DOMContentLoaded', () => {
       closeProductModal();
     }
   };
+
+  if (formProductImage && googlePhotosWarning) {
+    formProductImage.addEventListener('input', () => {
+      const val = formProductImage.value.trim();
+      if (val.includes('photos.app.goo.gl') || val.includes('photos.google.com')) {
+        googlePhotosWarning.classList.remove('hidden');
+      } else {
+        googlePhotosWarning.classList.add('hidden');
+      }
+    });
+  }
 
   // --- STOCK VIEW RENDER & LOGIC ---
   function renderStockTab() {
