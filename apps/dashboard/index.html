@@ -712,13 +712,38 @@
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label for="form-product-image" class="text-xs font-bold text-outline uppercase tracking-wider">URL da
-            Imagem</label>
-          <input type="url" id="form-product-image"
-            class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
-            placeholder="https://exemplo.com/imagem.png" />
-          <div id="google-photos-warning" class="hidden text-xs text-error font-medium mt-1 bg-error-container/20 p-2.5 rounded-lg border border-error/20">
-            ⚠️ Links de compartilhamento do Google Fotos (photos.app.goo.gl) <strong>não funcionam diretamente</strong>. Use uma hospedagem como <a href="https://imgbb.com" target="_blank" class="underline hover:text-red-700">ImgBB</a> ou envie o arquivo na pasta do site.
+          <label class="text-xs font-bold text-outline uppercase tracking-wider">Imagem do Produto (Máx: 200KB)</label>
+          
+          <!-- Seleção de Modo: Upload ou URL -->
+          <div class="flex gap-2 mb-1">
+            <button type="button" id="btn-image-mode-upload" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary/15 text-secondary border border-secondary/20 transition-all cursor-pointer">
+              Upload de Arquivo
+            </button>
+            <button type="button" id="btn-image-mode-url" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-surface hover:bg-surface-container-high border border-outline-variant/30 text-outline hover:text-on-surface transition-all cursor-pointer">
+              URL da Imagem
+            </button>
+          </div>
+
+          <!-- Área de Upload de Arquivo -->
+          <div id="container-image-upload" class="flex flex-col gap-2">
+            <input type="file" id="form-product-image-file" accept="image/*"
+              class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-secondary/10 file:text-secondary hover:file:bg-secondary/20 file:cursor-pointer" />
+            <div id="container-image-preview" class="hidden relative aspect-video w-full rounded-xl overflow-hidden bg-surface-container-high border border-outline-variant/20 flex items-center justify-center">
+              <img id="form-product-image-preview" src="" class="w-full h-full object-cover" />
+              <button type="button" id="btn-remove-preview-image" class="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all flex items-center justify-center cursor-pointer">
+                <span class="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Entrada de URL Manual -->
+          <div id="container-image-url" class="hidden flex flex-col gap-2">
+            <input type="url" id="form-product-image"
+              class="bg-surface-container-low border border-outline-variant rounded-xl p-3 text-sm focus:ring-1 focus:ring-secondary/50 focus:border-secondary outline-none transition-all text-on-surface"
+              placeholder="https://exemplo.com/imagem.png" />
+            <div id="google-photos-warning" class="hidden text-xs text-error font-medium mt-1 bg-error-container/20 p-2.5 rounded-lg border border-error/20">
+              ⚠️ Links de compartilhamento do Google Fotos (photos.app.goo.gl) <strong>não funcionam diretamente</strong>. Use uma hospedagem como <a href="https://imgbb.com" target="_blank" class="underline hover:text-red-700">ImgBB</a> ou envie o arquivo na pasta do site.
+            </div>
           </div>
         </div>
 

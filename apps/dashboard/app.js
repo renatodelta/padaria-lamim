@@ -133,6 +133,83 @@ document.addEventListener('DOMContentLoaded', () => {
   const formProductDesc = document.getElementById('form-product-desc');
   const googlePhotosWarning = document.getElementById('google-photos-warning');
 
+  // New Image Upload Elements
+  const btnImageModeUpload = document.getElementById('btn-image-mode-upload');
+  const btnImageModeUrl = document.getElementById('btn-image-mode-url');
+  const containerImageUpload = document.getElementById('container-image-upload');
+  const containerImageUrl = document.getElementById('container-image-url');
+  const formProductImageFile = document.getElementById('form-product-image-file');
+  const containerImagePreview = document.getElementById('container-image-preview');
+  const formProductImagePreview = document.getElementById('form-product-image-preview');
+  const btnRemovePreviewImage = document.getElementById('btn-remove-preview-image');
+
+  let activeImageMode = 'upload'; // 'upload' or 'url'
+
+  function setImageMode(mode) {
+    activeImageMode = mode;
+    if (mode === 'upload') {
+      if (btnImageModeUpload) {
+        btnImageModeUpload.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary/15 text-secondary border border-secondary/20 transition-all cursor-pointer";
+      }
+      if (btnImageModeUrl) {
+        btnImageModeUrl.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-surface hover:bg-surface-container-high border border-outline-variant/30 text-outline hover:text-on-surface transition-all cursor-pointer";
+      }
+      if (containerImageUpload) containerImageUpload.classList.remove('hidden');
+      if (containerImageUrl) containerImageUrl.classList.add('hidden');
+    } else {
+      if (btnImageModeUpload) {
+        btnImageModeUpload.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-surface hover:bg-surface-container-high border border-outline-variant/30 text-outline hover:text-on-surface transition-all cursor-pointer";
+      }
+      if (btnImageModeUrl) {
+        btnImageModeUrl.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary/15 text-secondary border border-secondary/20 transition-all cursor-pointer";
+      }
+      if (containerImageUpload) containerImageUpload.classList.add('hidden');
+      if (containerImageUrl) containerImageUrl.classList.remove('hidden');
+    }
+  }
+
+  if (btnImageModeUpload && btnImageModeUrl) {
+    btnImageModeUpload.onclick = () => setImageMode('upload');
+    btnImageModeUrl.onclick = () => setImageMode('url');
+  }
+
+  if (formProductImageFile) {
+    formProductImageFile.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) {
+        if (formProductImagePreview) formProductImagePreview.src = '';
+        if (containerImagePreview) containerImagePreview.classList.add('hidden');
+        return;
+      }
+
+      // Size limit: 200KB (200 * 1024 bytes)
+      const maxSize = 200 * 1024;
+      if (file.size > maxSize) {
+        alert(`O arquivo selecionado tem ${(file.size / 1024).toFixed(1)}KB. O limite de tamanho permitido é de 200KB. Escolha outra imagem.`);
+        formProductImageFile.value = '';
+        if (formProductImagePreview) formProductImagePreview.src = '';
+        if (containerImagePreview) containerImagePreview.classList.add('hidden');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (formProductImagePreview) formProductImagePreview.src = event.target.result;
+        if (containerImagePreview) containerImagePreview.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    };
+  }
+
+  if (btnRemovePreviewImage) {
+    btnRemovePreviewImage.onclick = () => {
+      if (formProductImageFile) formProductImageFile.value = '';
+      if (formProductImagePreview) formProductImagePreview.src = '';
+      if (containerImagePreview) containerImagePreview.classList.add('hidden');
+      if (formProductImage) formProductImage.value = '';
+    };
+  }
+
   const btnAddProduct = document.getElementById('btn-add-product');
   const btnCloseProductModal = document.getElementById('btn-close-product-modal');
   const btnCancelProductModal = document.getElementById('btn-cancel-product-modal');
@@ -1212,6 +1289,11 @@ document.addEventListener('DOMContentLoaded', () => {
     formProduct.reset();
     formProductId.value = '';
 
+    if (formProductImageFile) formProductImageFile.value = '';
+    if (formProductImagePreview) formProductImagePreview.src = '';
+    if (containerImagePreview) containerImagePreview.classList.add('hidden');
+    setImageMode('upload');
+
     if (productId) {
       const prod = products.find(p => p.id === productId);
       if (!prod) return;
@@ -1223,6 +1305,11 @@ document.addEventListener('DOMContentLoaded', () => {
       formProductPrice.value = prod.price;
       formProductImage.value = prod.image || '';
       formProductDesc.value = prod.desc;
+
+      if (prod.image) {
+        if (formProductImagePreview) formProductImagePreview.src = formatImageUrl(prod.image);
+        if (containerImagePreview) containerImagePreview.classList.remove('hidden');
+      }
     } else {
       modalProductTitle.textContent = "Novo Produto";
     }
@@ -1257,16 +1344,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = formProductName.value.trim();
     const category = formProductCategory.value;
     const price = parseFloat(formProductPrice.value) || 0;
-    const image = formProductImage.value.trim();
     const desc = formProductDesc.value.trim();
     const idVal = formProductId.value;
 
-    if (image.includes('photos.app.goo.gl') || image.includes('photos.google.com')) {
-      alert("Erro: Links de compartilhamento do Google Fotos não são suportados diretamente. Use uma hospedagem como o ImgBB, Postimages ou salve a imagem na pasta do site.");
-      return;
+    const btnSaveProduct = document.querySelector('button[form="form-product"]');
+    let btnSaveText = null;
+    let originalText = 'Salvar Produto';
+
+    if (btnSaveProduct) {
+      btnSaveText = btnSaveProduct.querySelector('span:not(.material-symbols-outlined)');
+      originalText = btnSaveText ? btnSaveText.textContent : 'Salvar Produto';
+      if (btnSaveText) btnSaveText.textContent = 'Salvando...';
+      btnSaveProduct.disabled = true;
+      btnSaveProduct.classList.add('opacity-50', 'pointer-events-none');
     }
 
     try {
+      let image = '';
+
+      if (activeImageMode === 'upload') {
+        const file = formProductImageFile ? formProductImageFile.files[0] : null;
+        if (file) {
+          // Validate size again before uploading just in case
+          const maxSize = 200 * 1024;
+          if (file.size > maxSize) {
+            throw new Error(`Imagem excede o limite de 200KB. Escolha outra imagem.`);
+          }
+
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
+          const filePath = `produtos/${fileName}`;
+
+          const { data, error: uploadError } = await supabaseClient.storage
+            .from('padaria-lamim')
+            .upload(filePath, file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: publicUrlData } = supabaseClient.storage
+            .from('padaria-lamim')
+            .getPublicUrl(filePath);
+
+          image = publicUrlData.publicUrl;
+        } else {
+          image = formProductImage.value.trim();
+        }
+      } else {
+        image = formProductImage.value.trim();
+        if (image.includes('photos.app.goo.gl') || image.includes('photos.google.com')) {
+          throw new Error("Links de compartilhamento do Google Fotos não são suportados. Use uma hospedagem direta de imagens ou faça o upload do arquivo.");
+        }
+      }
+
       if (idVal) {
         const { error } = await supabaseClient
           .from('produtos')
@@ -1300,7 +1429,13 @@ document.addEventListener('DOMContentLoaded', () => {
       renderProductsTab();
     } catch (err) {
       console.error("Erro ao salvar produto no Supabase:", err);
-      alert("Erro ao salvar produto. Verifique se a tabela 'produtos' tem a coluna 'description'.");
+      alert(err.message || "Erro ao salvar produto. Verifique sua conexão ou se a imagem atende aos requisitos.");
+    } finally {
+      if (btnSaveProduct) {
+        if (btnSaveText) btnSaveText.textContent = originalText;
+        btnSaveProduct.disabled = false;
+        btnSaveProduct.classList.remove('opacity-50', 'pointer-events-none');
+      }
     }
   };
 
