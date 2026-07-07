@@ -134,44 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const googlePhotosWarning = document.getElementById('google-photos-warning');
 
   // New Image Upload Elements
-  const btnImageModeUpload = document.getElementById('btn-image-mode-upload');
-  const btnImageModeUrl = document.getElementById('btn-image-mode-url');
-  const containerImageUpload = document.getElementById('container-image-upload');
-  const containerImageUrl = document.getElementById('container-image-url');
   const formProductImageFile = document.getElementById('form-product-image-file');
   const containerImagePreview = document.getElementById('container-image-preview');
   const formProductImagePreview = document.getElementById('form-product-image-preview');
   const btnRemovePreviewImage = document.getElementById('btn-remove-preview-image');
-
-  let activeImageMode = 'upload'; // 'upload' or 'url'
-
-  function setImageMode(mode) {
-    activeImageMode = mode;
-    if (mode === 'upload') {
-      if (btnImageModeUpload) {
-        btnImageModeUpload.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary/15 text-secondary border border-secondary/20 transition-all cursor-pointer";
-      }
-      if (btnImageModeUrl) {
-        btnImageModeUrl.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-surface hover:bg-surface-container-high border border-outline-variant/30 text-outline hover:text-on-surface transition-all cursor-pointer";
-      }
-      if (containerImageUpload) containerImageUpload.classList.remove('hidden');
-      if (containerImageUrl) containerImageUrl.classList.add('hidden');
-    } else {
-      if (btnImageModeUpload) {
-        btnImageModeUpload.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-surface hover:bg-surface-container-high border border-outline-variant/30 text-outline hover:text-on-surface transition-all cursor-pointer";
-      }
-      if (btnImageModeUrl) {
-        btnImageModeUrl.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary/15 text-secondary border border-secondary/20 transition-all cursor-pointer";
-      }
-      if (containerImageUpload) containerImageUpload.classList.add('hidden');
-      if (containerImageUrl) containerImageUrl.classList.remove('hidden');
-    }
-  }
-
-  if (btnImageModeUpload && btnImageModeUrl) {
-    btnImageModeUpload.onclick = () => setImageMode('upload');
-    btnImageModeUrl.onclick = () => setImageMode('url');
-  }
 
   if (formProductImageFile) {
     formProductImageFile.onchange = (e) => {
@@ -1292,7 +1258,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formProductImageFile) formProductImageFile.value = '';
     if (formProductImagePreview) formProductImagePreview.src = '';
     if (containerImagePreview) containerImagePreview.classList.add('hidden');
-    setImageMode('upload');
 
     if (productId) {
       const prod = products.find(p => p.id === productId);
@@ -1312,15 +1277,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } else {
       modalProductTitle.textContent = "Novo Produto";
-    }
-
-    if (googlePhotosWarning) {
-      const imageVal = formProductImage.value.trim();
-      if (imageVal.includes('photos.app.goo.gl') || imageVal.includes('photos.google.com')) {
-        googlePhotosWarning.classList.remove('hidden');
-      } else {
-        googlePhotosWarning.classList.add('hidden');
-      }
     }
 
     modalProduct.classList.remove('hidden');
@@ -1362,38 +1318,31 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       let image = '';
 
-      if (activeImageMode === 'upload') {
-        const file = formProductImageFile ? formProductImageFile.files[0] : null;
-        if (file) {
-          // Validate size again before uploading just in case
-          const maxSize = 200 * 1024;
-          if (file.size > maxSize) {
-            throw new Error(`Imagem excede o limite de 200KB. Escolha outra imagem.`);
-          }
-
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
-          const filePath = `produtos/${fileName}`;
-
-          const { data, error: uploadError } = await supabaseClient.storage
-            .from('padaria-lamim')
-            .upload(filePath, file);
-
-          if (uploadError) throw uploadError;
-
-          const { data: publicUrlData } = supabaseClient.storage
-            .from('padaria-lamim')
-            .getPublicUrl(filePath);
-
-          image = publicUrlData.publicUrl;
-        } else {
-          image = formProductImage.value.trim();
+      const file = formProductImageFile ? formProductImageFile.files[0] : null;
+      if (file) {
+        // Validate size again before uploading just in case
+        const maxSize = 200 * 1024;
+        if (file.size > maxSize) {
+          throw new Error(`Imagem excede o limite de 200KB. Escolha outra imagem.`);
         }
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
+        const filePath = `produtos/${fileName}`;
+
+        const { data, error: uploadError } = await supabaseClient.storage
+          .from('padaria-lamim')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicUrlData } = supabaseClient.storage
+          .from('padaria-lamim')
+          .getPublicUrl(filePath);
+
+        image = publicUrlData.publicUrl;
       } else {
         image = formProductImage.value.trim();
-        if (image.includes('photos.app.goo.gl') || image.includes('photos.google.com')) {
-          throw new Error("Links de compartilhamento do Google Fotos não são suportados. Use uma hospedagem direta de imagens ou faça o upload do arquivo.");
-        }
       }
 
       if (idVal) {
@@ -1471,16 +1420,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  if (formProductImage && googlePhotosWarning) {
-    formProductImage.addEventListener('input', () => {
-      const val = formProductImage.value.trim();
-      if (val.includes('photos.app.goo.gl') || val.includes('photos.google.com')) {
-        googlePhotosWarning.classList.remove('hidden');
-      } else {
-        googlePhotosWarning.classList.add('hidden');
-      }
-    });
-  }
+  // (googlePhotosWarning event listener removed as manual URL input is retired)
 
   // --- STOCK VIEW RENDER & LOGIC ---
   function renderStockTab() {
