@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const categories = [
+    { id: 'paes', name: '🥖 Pães Artesanais' },
     { id: 'bolos', name: '🍰 Bolos Caseiros' }
   ];
 
@@ -1462,24 +1463,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Registro do Service Worker
   if ('serviceWorker' in navigator) {
+    // Evitar loop infinito de recarregamento
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        window.location.reload();
+        refreshing = true;
+      }
+    });
+
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
         .then((reg) => {
           console.log('Service Worker do Cliente registrado com sucesso no escopo:', reg.scope);
-          
-          // Forçar a verificação de atualizações no servidor ao abrir o app
-          reg.update();
-
-          // Se encontrar uma nova versão instalada no background, recarrega a página na hora
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('Nova versão encontrada! Atualizando aplicativo...');
-                window.location.reload();
-              }
-            });
-          });
+          // Verificar atualizações no servidor de forma segura
+          reg.update().catch(err => console.warn('Erro ao atualizar Service Worker:', err));
         })
         .catch((err) => console.error('Erro ao registrar Service Worker do Cliente:', err));
     });
